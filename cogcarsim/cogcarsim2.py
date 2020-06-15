@@ -227,15 +227,13 @@ class CogCarSim:
         :return: the current map level, 0 if map randomly generated
         :rtype: int
         """
-        global random_gen
+        # global random_gen
+        global current_level
+        global number_of_blobs
 
         if not random_gen:
+            self.blobs = []
             try:
-                self.blobs = []
-
-                global current_level
-                global number_of_blobs
-
                 with open(path + os.sep + levels[level]) as file:
                     line = file.readline()
                     lines = 0
@@ -248,6 +246,7 @@ class CogCarSim:
                         blob = self.BlobEntry(lines, x, y, shape, color)
                         self.blobs.append(blob)
                         lines+=1
+                        line = file.readline()
                     number_of_blobs = lines
                     file.close()
                     return True
@@ -298,8 +297,8 @@ class CogCarSim:
         left_lane = cylinder(pos=(left_lane_x, lane_back_y, rail_height), axis=(0, 1, 0), radius=lane_radius, length=lane_len, color=color.gray(0.2))
         right_lane = cylinder(pos=(right_lane_x, lane_back_y, rail_height), axis=(0, 1, 0), radius=lane_radius, length=lane_len, color=color.gray(0.2))
 
-        global current_level
-        global random_gen
+        # global current_level
+        # global random_gen
 
         if random_gen:
             if task == manual_speed:
@@ -645,7 +644,7 @@ class CogCarSim:
             step += 1
 
         # after while loop
-        
+
         clock_diff = path[-1].clock_begin - path[0].clock_begin
         step_diff = path[-1].step - path[0].step
         print "Time:", clock_diff
