@@ -231,28 +231,27 @@ class CogCarSim:
         global current_level
         global number_of_blobs
 
-        if not random_gen:
-            self.blobs = []
-            try:
-                with open(path + os.sep + levels[level]) as file:
+        self.blobs = []
+        try:
+            with open(path + os.sep + levels[level]) as file:
+                line = file.readline()
+                lines = 0
+                while line:
+                    line_components = line.split(',')
+                    x = float(line_components[0])
+                    y = float(line_components[1])
+                    shape = int(line_components[2])
+                    color = int(line_components[3])
+                    blob = self.BlobEntry(lines, x, y, shape, color)
+                    self.blobs.append(blob)
+                    lines+=1
                     line = file.readline()
-                    lines = 0
-                    while line:
-                        line_components = line.split(',')
-                        x = float(line_components[0])
-                        y = float(line_components[1])
-                        shape = int(line_components[2])
-                        color = int(line_components[3])
-                        blob = self.BlobEntry(lines, x, y, shape, color)
-                        self.blobs.append(blob)
-                        lines+=1
-                        line = file.readline()
-                    number_of_blobs = lines
-                    file.close()
-                    return True
-            except IOError as e:
-                raise os.strerror(e.errno)
-                return False
+                number_of_blobs = lines
+                file.close()
+                return True
+        except IOError as e:
+            print os.strerror(e.errno)
+            return False
         current_level = 0
 
     def load_next_level(self):
@@ -644,7 +643,7 @@ class CogCarSim:
             step += 1
 
         # after while loop
-
+        
         clock_diff = path[-1].clock_begin - path[0].clock_begin
         step_diff = path[-1].step - path[0].step
         print "Time:", clock_diff
@@ -921,6 +920,8 @@ class Stats:
 
 
 def get_name():
+    global current_level
+    global random_gen
     
     speed = default_start_velocity
     min_speed = 0.3
@@ -935,10 +936,7 @@ def get_name():
 
     bc = tc = (1.0, 1.0, 1.0)
     angle = 0.01
-    global current_level
-    global random_gen
-
-    
+        
     scene = display(title='CogCarSim', exit=1, fullscreen=True, width=1920, height=1080, background=(0,0,0), autoscale=False)
     scene.select()
 
