@@ -248,24 +248,11 @@ class CogCarSim:
                     line = file.readline()
                 number_of_blobs = lines
                 file.close()
-                return True
+                # return lines
         except IOError as e:
             print os.strerror(e.errno)
-            return False
-        current_level = 0
-
-    def load_next_level(self):
-        """
-        Load next level in the map stack
-
-        :param level: map level, defaults to 1
-        :type level: int, optional
-        """
-        global current_level
-
-        next_level = current_level + 1
-        self.load_level(level=next_level)
-        current_level = next_level
+        # current_level = 0
+        number_of_blobs = 2000      # default number of blobs
 
     def define_display(self):
         # Define the display
@@ -922,6 +909,7 @@ class Stats:
 def get_name():
     global current_level
     global random_gen
+    # global number_of_blobs
     
     speed = default_start_velocity
     min_speed = 0.3
@@ -951,12 +939,13 @@ def get_name():
     speed_prompt = label(pos=(-2,-1.5,0), text="Speed", height=30, linecolor=tc, opacity=0, box=0)
     speed_label = label(pos=(1.5,-1.5,0), height=30, border=10, opacity=1, linecolor=bc, color=tc, box=0)
     level_prompt = label(pos=(-2, -3, 0), text="Level", height=30, opacity=0, box=0)
-    level = label(pos=(1.5, -3, 0), height=30, width=50, linecolor=tc, color=tc, box=0)
+    level = label(pos=(1.5, -3, 0), height=30, width=50, linecolor=bc, color=tc, box=0)
+    next_level = label(pos=(4.5, -3, 0), text="Next_level", height=30, box=0)
     
     start_label = label(pos=(0,-4.5 ,0), height=24, border=10, opacity=1, box=0, linecolor=color.blue) 
     start_label.text = 'Please type in your name\nPress enter to start'
 
-    fields = [name, task_label, speed_label, level]
+    fields = [name, task_label, speed_label, level, next_level]
     key = ''
     while 1:
         rate(50)
@@ -1021,13 +1010,16 @@ def get_name():
         name = "Anonymous"
     if task != auto_speed and task != fixed_speed:
         speed = 0.0
-    if level == "":
+    if level == "" and focus <> 4:
         random_gen = True
         current_level = 0
     else:
         random_gen = False
-        current_level = int(level)
-    return name, key, task, speed, current_level
+        if focus == 4:
+            current_level = current_level + 1
+        else:
+            current_level = int(level)
+    return name, key, task, speed
 
 
 def show_fame(titletext, current, subtitle, results):
@@ -1130,7 +1122,7 @@ def get_test_details(name, game):
     return blob_seed, nblobs, task, selected_velocity, description
     
 def test_run():
-    name, key, game, vel, current_level = get_name()
+    name, key, game, vel = get_name()
     
     if key == 'f1': 
         if game <= fixed_speed:
