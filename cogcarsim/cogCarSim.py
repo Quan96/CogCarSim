@@ -237,7 +237,7 @@ class CogCarSim:
         self.first_visible_blob = 0
         self.n_visible_blobs = 0
         self.reposition_blobs(car.pos.y, 0)
-        self.gate_passed(car.pos.y)
+        # self.gate_passed(car.pos.y)
         
         return car, left_lane, right_lane
 
@@ -314,8 +314,6 @@ class CogCarSim:
         :rtype: int
         """
         blob_passed = 0
-        # gate_passed = 0
-        # velocity = 0
         created = 0
         for i in range(self.first_visible_blob, self.first_visible_blob + self.n_visible_blobs):
             if self.blobs[i].y < ycar - safe_back_y:
@@ -338,19 +336,17 @@ class CogCarSim:
     
     def gate_passed(self, ycar):
         velocity = 0
-        if self.gates[0].y < ycar - safe_back_y:
-            velocity = self.gates[0].velocity
-            self.gates[0].hide()
-            del self.gates[0]
-            self.first_visible_blob += 1
-            self.n_visible_blobs -= 1
+        if len(self.gates) >= 1:
+            if self.gates[0].y < ycar - safe_back_y:
+                velocity = self.gates[0].get_velocity()
+                # self.gates[0].hide()
+                del self.gates[0]
             
-        for i in range(self.first_visible_blob + self.n_visible_blobs, len(self.gates)):
-            if self.gates[i].y - ycar < lane_len:
-                self.gates[i].show()
-                self.n_visible_blobs += 1
-            else:
-                break
+        # for i in range(len(self.gates)):
+        #     if self.gates[i].y - ycar < lane_len:
+        #         self.gates[i].show()
+        #     else:
+        #         break
         return velocity
     
     
@@ -492,6 +488,7 @@ class CogCarSim:
             passed = self.reposition_blobs(car.pos.y, step)
             
             controlled_velocity = self.gate_passed(car.pos.y)
+            
             if controlled_velocity <> 0:
                 velocity = controlled_velocity
                         
@@ -632,6 +629,3 @@ def task_string(task, velocity):
     elif task == fixed_speed:
         s = "fixed {:3.1f}".format(velocity)
     return s
-
-sim = CogCarSim()
-sim.load_level(level=2)

@@ -105,13 +105,14 @@ def get_name():
     if level == "" and focus <> 4:
         setRandom(True)
         setCurrentLevel(0)
+        level = 0
     else:
         setRandom(False)
         if focus == 4:
-            setCurrentLevel(current_level + 1)
+            level = current_level + 1
         else:
-            setCurrentLevel(int(level))
-    return name, key, task, speed
+            level = int(level)
+    return name, key, task, speed, level
 
 def show_fame(titletext, current, subtitle, results):
     scene = display(title="CogCarSim", exit=1, fullscreen=True, width=1920, height=1080, autoscale=False)
@@ -211,7 +212,7 @@ def get_test_details(name, game):
     return blob_seed, nblobs, task, selected_velocity, description
 
 def test_run():
-    name, key, game, vel = get_name()
+    name, key, game, vel, level = get_name()
     
     if key == 'f1':
         if game <= fixed_speed:
@@ -228,11 +229,11 @@ def test_run():
         
     sim = CogCarSim()
     if not isRandom():
-        nblobs = sim.load_level(level=current_level)
+        nblobs = sim.load_level(level=level)
     else:
         nblobs = number_of_blobs
     path, blobs, cheated, collisions, speed_drops, end_velocity = sim.run(start_velocity=selected_velocity, task=task,
-                                                                         blob_seed=blob_seed, total_blobs=nblobs, level=current_level)
+                                                                         blob_seed=blob_seed, total_blobs=nblobs, level=level)
     
     if len(path) > 0:
         duration = path[-1].clock_begin - path[0].clock_begin
@@ -240,9 +241,9 @@ def test_run():
             name = "Cheater"
     run = Stats.get_last_run_number(results_dbfile)+1
     t = time.localtime()
-    date = str(datetime.datetime(t.tm_year, t.tm_mon, t.tm_day, t.tm_hour, t.tm_min, t.tm_sec))
+    date = str(datetime.datetime(t.tm_year, t.tm_mon, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec))
     Stats.save(dbfilename=results_dbfile, path=path, blobs=blobs, description = description,
-                participant=name, run=run, task=task, seed=blob_seed, 
+                participant=name, run=run, task=task, seed=blob_seed, level=current_level, 
                 date = date, start_velocity = selected_velocity, collisions = collisions, speed_drops = speed_drops)
     show_high(name, task, selected_velocity, duration, collisions, speed_drops, end_velocity)
     

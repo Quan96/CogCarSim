@@ -4,7 +4,6 @@ import os
 import sqlite3
 import os.path
 import sys
-import errno
 
 version = "2012-11-20-A"
 
