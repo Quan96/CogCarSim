@@ -1,8 +1,8 @@
 # CogCarSim (University of Helsinki)
 
 ## Requirements:
-* VPython for Python 2. Can be download via https://vpython.org/contents/download_windows.html (32-bit version)
-* Python 2.7.x (32-bit version).
+* VPython for Python 2. Can be download via https://vpython.org/contents/download_windows.html (must be 32-bit version due to compatibility problems)
+* Python 2.7.x (must be 32-bit version).
 * Install the VPython package to site-packages folder in Python 2 folder in your local machine.
 
 ## Usage:
