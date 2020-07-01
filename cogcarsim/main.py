@@ -25,7 +25,7 @@ def get_name():
     laatta1 = box(pos=(-6.5,0,0), size=(3,3,3), color=color.blue)
     laatta2 = box(pos=(6.5,0,0), size=(3,3,3), color=color.blue)
     
-    title = label(pos=(0, 4.0, 0), text="CogCarSim", height=80, opacity=0, box=0)
+    title = label(pos=(0, 5.0, 0), text="CogCarSim", height=80, opacity=0, box=0)
     name_prompt = label(pos=(-2, 3, 0), text="Name", height=30, opacity=0, box=0)
     name = label(pos=(1.5, 3, 0), height=30, width=100, linecolor=bc, color=tc)
     task_prompt = label(pos=(-2,1.5,0), text="Game", height=30, linecolor=tc, opacity=0, box=0)
