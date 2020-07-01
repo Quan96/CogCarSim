@@ -17,6 +17,6 @@ git clone git@github.com:Quan96/CogCarSim.git
 3. Right-click -> Powershell (Windows Terminal) -> Open here or Open the folder in IDE then using terminal
 ```
 cd cogcarsim/
-py -2 cogcarsim2.py
+py -2 main.py
 ```
 
