@@ -3,6 +3,7 @@ from stats import *
 
 def get_name():
     global current_level
+    is_gate_on = True
     
     speed = default_start_velocity
     min_speed = 0.3
@@ -25,12 +26,14 @@ def get_name():
     laatta2 = box(pos=(6.5,0,0), size=(3,3,3), color=color.blue)
     
     title = label(pos=(0, 4.0, 0), text="CogCarSim", height=80, opacity=0, box=0)
-    name_prompt = label(pos=(-2, 1.5, 0), text="Name", height=30, opacity=0, box=0)
-    name = label(pos=(1.5, 1.5, 0), height=30, width=100, linecolor=bc, color=tc)
-    task_prompt = label(pos=(-2,0.0,0), text="Game", height=30, linecolor=tc, opacity=0, box=0)
-    task_label = label(pos=(1.5,0.0,0), height=30, border=10, opacity=0, linecolor=bc, color=tc, box=0) 
-    speed_prompt = label(pos=(-2,-1.5,0), text="Speed", height=30, linecolor=tc, opacity=0, box=0)
-    speed_label = label(pos=(1.5,-1.5,0), height=30, border=10, opacity=1, linecolor=bc, color=tc, box=0)
+    name_prompt = label(pos=(-2, 3, 0), text="Name", height=30, opacity=0, box=0)
+    name = label(pos=(1.5, 3, 0), height=30, width=100, linecolor=bc, color=tc)
+    task_prompt = label(pos=(-2,1.5,0), text="Game", height=30, linecolor=tc, opacity=0, box=0)
+    task_label = label(pos=(1.5,1.5,0), height=30, border=10, opacity=0, linecolor=bc, color=tc, box=0) 
+    speed_prompt = label(pos=(-2,0,0), text="Speed", height=30, linecolor=tc, opacity=0, box=0)
+    speed_label = label(pos=(1.5,0,0), height=30, border=10, opacity=1, linecolor=bc, color=tc, box=0)
+    gate_prompt = label(pos=(-2,-1.5,0), text="Gate", height=30, linecolor=tc, opacity=0, box=0)
+    gate_label = label(pos=(1.5,-1.5,0), text="On", height=30, border=10, opacity=1, linecolor=bc, color=tc, box=0)
     level_prompt = label(pos=(-2, -3, 0), text="Level", height=30, opacity=0, box=0)
     level = label(pos=(1.5, -3, 0), height=30, width=50, linecolor=bc, color=tc, box=0)
     next_level = label(pos=(4.5, -3, 0), text="Next_level", height=30, box=0)
@@ -38,7 +41,7 @@ def get_name():
     start_label = label(pos=(0,-4.5 ,0), height=24, border=10, opacity=1, box=0, linecolor=color.blue) 
     start_label.text = 'Please type in your name\nPress enter to start'
     
-    fields = [name, task_label, speed_label, level, next_level]
+    fields = [name, task_label, speed_label, gate_label, level, next_level]
     key = ''
     while 1:
         rate(50)
@@ -55,19 +58,25 @@ def get_name():
             elif len(key) == 1 and focus == 0:
                 if len(name.text) < max_name_len:
                     name.text += key    # append new character
-            elif len(key) == 1 and focus == 3:
+            elif len(key) == 1 and focus == 4:
                 if key.isdigit():
                     if int(key) <= len(levels):
                         level.text += key
             elif (key == 'backspace' or key == 'delete'):
                 if len(name.text) > 0 and focus == 0:
                     name.text = name.text[:-1] # erase 1 letter
-                if len(level.text) > 0 and focus == 3:
+                if len(level.text) > 0 and focus == 4:
                     level.text = level.text[:-1]
+            elif key == "right" and focus == 3:
+                is_gate_on = not is_gate_on
+                if is_gate_on:
+                    gate_label.text = "On"
+                else:
+                    gate_label.text = "Off"
             elif key == "shift+delete":
                 if focus == 0:
                     name.text = ''
-                if focus == 3:
+                if focus == 4:
                     level.text = ''
             elif key == 'left':
                 if focus == 0:
@@ -104,17 +113,17 @@ def get_name():
         name = "Anonymous"
     if task != auto_speed and task != fixed_speed:
         speed = 0.0
-    if level == "" and focus <> 4:
+    if level_text == "" and focus <> 5:
         setRandom(True)
         # setCurrentLevel(0)
         current_level = 0
     else:
         setRandom(False)
-        if focus == 4:
+        if focus == 5:
             current_level += 1
         else:
             current_level = int(level_text)
-    return name, key, task, speed, current_level
+    return name, key, task, speed, current_level, is_gate_on
 
 def show_fame(titletext, current, subtitle, results):
     scene = display(title="CogCarSim", exit=1, fullscreen=True, width=1920, height=1080, autoscale=False)
@@ -214,7 +223,7 @@ def get_test_details(name, game):
     return blob_seed, nblobs, task, selected_velocity, description
 
 def test_run():
-    name, key, game, vel, level = get_name()
+    name, key, game, vel, level, is_gate_on = get_name()
     
     if key == 'f1':
         if game <= fixed_speed:
@@ -235,7 +244,7 @@ def test_run():
     else:
         nblobs = number_of_blobs
     path, blobs, cheated, collisions, speed_drops, end_velocity = sim.run(start_velocity=selected_velocity, task=task,
-                                                                         blob_seed=blob_seed, total_blobs=nblobs, level=level)
+                                                                         blob_seed=blob_seed, total_blobs=nblobs, level=level, is_gate_on=is_gate_on)
     
     if len(path) > 0:
         duration = path[-1].clock_begin - path[0].clock_begin
