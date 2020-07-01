@@ -82,7 +82,7 @@ max_name_len = 20
 # Level and map properties
 random_gen = True
 current_level = 0
-levels = {1: "map1.json", 2:"map2.json"}
+levels = {1: "map1.json", 2:"map2.json", 3:"map3.json"}
 
 class CogCarSim:
     
@@ -177,7 +177,7 @@ class CogCarSim:
             with open(path + os.sep + levels[level]) as json_file:
                 infor = json.load(json_file)
                 lines = 0
-                for data in infor["row"]:
+                for data in infor["rows"]:
                     # print len(data)
                     if len(data) == 4:
                         x = float(data[0])
@@ -447,6 +447,7 @@ class CogCarSim:
         step = 0
         max_velocity = velocity
         last_y = self.blobs[-1].y + 2 * safe_back_y
+        #input handling
         while car.y < last_y:
             if not batch:
                 rate(display_rate)
@@ -617,9 +618,9 @@ def setRandom(state):
     global random_gen
     random_gen = state
     
-def setCurrentLevel(level):
-    global current_level
-    current_level = level
+# def setCurrentLevel(level):
+#     global current_level
+#     current_level = level
     
 def task_string(task, velocity):
     if task == auto_speed:
