@@ -80,9 +80,9 @@ nocollision_velocity_up = 0.0012
 max_name_len = 20
 
 # Level and map properties
-random_gen = True
-current_level = 0
-levels = {1: "map1.json", 2:"map2.json", 3:"map3.json"}
+random_gen = True                                           # check if user choose to randomly generated a map or not
+current_level = 0                                           # keep track of current level for level up feature
+levels = {1: "map1.json", 2:"map2.json", 3:"map3.json"}     # a dict contains levels and maps name
 
 class CogCarSim:
     
@@ -334,9 +334,9 @@ class CogCarSim:
                 break
         return blob_passed
     
-    def gate_passed(self, ycar):
+    def gate_passed(self, ycar, is_gate_on):
         velocity = 0
-        if len(self.gates) >= 1:
+        if len(self.gates) >= 1 and is_gate_on == True:
             if self.gates[0].y < ycar - safe_back_y:
                 velocity = self.gates[0].get_velocity()
                 # self.gates[0].hide()
@@ -398,7 +398,7 @@ class CogCarSim:
         return cheated
     
     def run(self, task, start_velocity, total_blobs, blob_seed, 
-                    replay = False, wheel_positions=None, throttle_positions=None, level=1):
+                    replay = False, wheel_positions=None, throttle_positions=None, level=1, is_gate_on=True):
         """
         The main loop of the program
 
@@ -488,7 +488,7 @@ class CogCarSim:
             # blob housekeeping
             passed = self.reposition_blobs(car.pos.y, step)
             
-            controlled_velocity = self.gate_passed(car.pos.y)
+            controlled_velocity = self.gate_passed(car.pos.y, is_gate_on)
             
             if controlled_velocity <> 0:
                 velocity = controlled_velocity
