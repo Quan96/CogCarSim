@@ -2,6 +2,8 @@ from cogCarSim import *
 from stats import *
 
 def get_name():
+    global current_level
+    
     speed = default_start_velocity
     min_speed = 0.3
     max_speed = 4.0
@@ -96,7 +98,7 @@ def get_name():
         speed_label.linecolor = (0.2, 0.2, 0.2) if task != auto_speed and task != fixed_speed  else (1.0, 1.0, 1.0)
         
     name = name.text
-    level = level.text
+    level_text = level.text
     scene.visible = False
     if name == "":
         name = "Anonymous"
@@ -104,15 +106,15 @@ def get_name():
         speed = 0.0
     if level == "" and focus <> 4:
         setRandom(True)
-        setCurrentLevel(0)
-        level = 0
+        # setCurrentLevel(0)
+        current_level = 0
     else:
         setRandom(False)
         if focus == 4:
-            level = current_level + 1
+            current_level += 1
         else:
-            level = int(level)
-    return name, key, task, speed, level
+            current_level = int(level_text)
+    return name, key, task, speed, current_level
 
 def show_fame(titletext, current, subtitle, results):
     scene = display(title="CogCarSim", exit=1, fullscreen=True, width=1920, height=1080, autoscale=False)
@@ -127,7 +129,7 @@ def show_fame(titletext, current, subtitle, results):
     l = []
     fametitle = label(pos=(fame_x+0.8, fame_y+1.0, 0), text=subtitle, height=50, box=0)
     for i in range(len(results)):
-        name, result = result[i]
+        name, result = results[i]
         append(l, label(pos=(fame_x-3.0,fame_y-i*fame_yd,0), text="%i"%(i+1), height = 30, box=0))
         append(l, label(pos=(fame_x-1.0,fame_y-i*fame_yd,0), text=result, height = 30, box=0))
         append(l, label(pos=(fame_x+3.6,fame_y-i*fame_yd,0), text=name, height = 30, box=0))
