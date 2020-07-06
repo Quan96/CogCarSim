@@ -10,6 +10,7 @@ import os
 import errno
 import wheel
 import sys
+import csv
 
 from blobEntry import *
 from speedGate import *
@@ -82,7 +83,8 @@ max_name_len = 20
 # Level and map properties
 random_gen = True                                           # check if user choose to randomly generated a map or not
 current_level = 0                                           # keep track of current level for level up feature
-levels = {1: "map1.json", 2:"map2.json", 3:"map3.json"}     # a dict contains levels and maps name
+levels = {1: "map1.json", 2:"map2.json", 3:"map3.json",     # a dict contains levels and maps name
+          4:"map4.txt", 5:"map5.csv"}     
 
 class CogCarSim:
     
@@ -174,25 +176,61 @@ class CogCarSim:
         self.blobs = []
         self.gates = []
         try:
-            with open(path + os.sep + levels[level]) as json_file:
-                infor = json.load(json_file)
+            with open(path + os.sep + levels[level]) as file:
                 lines = 0
-                for data in infor["rows"]:
-                    # print len(data)
-                    if len(data) == 4:
-                        x = float(data[0])
-                        y = float(data[1])
-                        shape = float(data[2])
-                        color = float(data[3])
-                        blob = BlobEntry(lines, x, y, shape, color)
-                        self.blobs.append(blob)
-                        lines += 1
-                    elif len(data) == 2:
-                        y = float(data[0])
-                        velocity = float(data[1])
-                        speed_gate = SpeedGate(y, velocity)
-                        self.gates.append(speed_gate)
-                json_file.close()
+                if levels[level].endswith(".json"):
+                    infor = json.load(file)
+                    for data in infor["rows"]:
+                        # print len(data)
+                        if len(data) == 4:
+                            x = float(data[0])
+                            y = float(data[1])
+                            shape = float(data[2])
+                            color = float(data[3])
+                            blob = BlobEntry(lines, x, y, shape, color)
+                            self.blobs.append(blob)
+                            lines += 1
+                        elif len(data) == 2:
+                            y = float(data[0])
+                            velocity = float(data[1])
+                            speed_gate = SpeedGate(y, velocity)
+                            self.gates.append(speed_gate)
+                elif levels[level].endswith(".txt"):
+                    infor = file.readline()
+                    while infor:
+                        data = infor.split(',')
+                        if len(data) == 4:
+                            x = float(data[0])
+                            y = float(data[1])
+                            shape = float(data[2])
+                            color = float(data[3])
+                            blob = BlobEntry(lines, x, y, shape, color)
+                            self.blobs.append(blob)
+                            lines += 1
+                        elif len(data) == 2:
+                            y = float(data[0])
+                            velocity = float(data[1])
+                            speed_gate = SpeedGate(y, velocity)
+                            self.gates.append(speed_gate)
+                        infor = file.readline()
+                elif levels[level].endswith(".csv"):
+                    infor = csv.reader(file, delimiter=",")
+                    next(infor)
+                    for row in infor:
+                        if len(row) == 4:
+                            x = float(row[0])
+                            y = float(row[1])
+                            shape = float(row[2])
+                            color = float(row[3])
+                            blob = BlobEntry(lines, x, y, shape, color)
+                            self.blobs.append(blob)
+                            lines += 1
+                        elif len(row) == 2:
+                            y = float(row[0])
+                            velocity = float(row[1])
+                            speed_gate = SpeedGate(y, velocity)
+                            self.gates.append(speed_gate)
+                file.close()
                 return lines
         except IOError as e:
             print os.strerror(e.errno)
