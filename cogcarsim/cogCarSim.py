@@ -84,7 +84,7 @@ max_name_len = 20
 random_gen = True                                           # check if user choose to randomly generated a map or not
 current_level = 0                                           # keep track of current level for level up feature
 levels = {1: "map1.json", 2:"map2.json", 3:"map3.json",     # a dict contains levels and maps name
-          4:"map4.txt", 5:"map5.csv"}     
+          4:"map4.txt", 5:"map5.csv"}
 
 class CogCarSim:
     
@@ -375,16 +375,14 @@ class CogCarSim:
     def gate_passed(self, ycar, is_gate_on):
         velocity = 0
         if len(self.gates) >= 1 and is_gate_on == True:
+            if self.gates[0].y - ycar < lane_len:
+                self.gates[0].show()
+                
             if self.gates[0].y < ycar - safe_back_y:
                 velocity = self.gates[0].get_velocity()
-                # self.gates[0].hide()
+                self.gates[0].hide()
                 del self.gates[0]
-            
-        # for i in range(len(self.gates)):
-        #     if self.gates[i].y - ycar < lane_len:
-        #         self.gates[i].show()
-        #     else:
-        #         break
+        
         return velocity
     
     
