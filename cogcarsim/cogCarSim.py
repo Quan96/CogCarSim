@@ -377,14 +377,11 @@ class CogCarSim:
         if len(self.gates) >= 1 and is_gate_on == True:
             if self.gates[0].y < ycar - safe_back_y:
                 velocity = self.gates[0].get_velocity()
-                # self.gates[0].hide()
+                self.gates[0].hide()
                 del self.gates[0]
             
-        # for i in range(len(self.gates)):
-        #     if self.gates[i].y - ycar < lane_len:
-        #         self.gates[i].show()
-        #     else:
-        #         break
+            # if self.gates[0].y - ycar < lane_len:
+                # self.gates[0].show()
         return velocity
     
     

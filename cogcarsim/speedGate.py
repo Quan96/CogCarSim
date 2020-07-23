@@ -16,7 +16,7 @@ class SpeedGate:
         return self.velocity
 
     def show(self):
-        gate = cylinder(pos=(left_lane_x, self.y, 1), axis=(1,0,0), radius=0.4, length=lane_width, color=color.yellow(0.02))
+        gate = cylinder(pos=(left_lane_x, self.y, 0.5), axis=(1,0,0), radius=0.1, length=lane_width, color=color.white)
         gate.visible = True
         self.g = gate
         self.visible = True
@@ -25,5 +25,5 @@ class SpeedGate:
     def hide(self):
         if self.visible:
             self.g.visible = False
-            self.visible = False
             self.g = None
+            self.visible = False
