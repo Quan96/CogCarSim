@@ -15,6 +15,7 @@ import csv
 from blobEntry import *
 from speedGate import *
 from pathEntry import *
+# from game import *
 
 refresh_rate = 60
 default_start_velocity = 1.6
@@ -278,6 +279,23 @@ class CogCarSim:
         # self.gate_passed(car.pos.y)
         
         return car, left_lane, right_lane
+    
+    # def create_grid(self, blob_score=1, adjacent_score=0):
+    #     """
+    #     Create the matrix of the game to represent state space
+
+    #     :param blob_score: [description], defaults to 1
+    #     :type blob_score: int, optional
+    #     :param adjacent_score: [description], defaults to 0
+    #     :type adjacent_score: int, optional
+    #     """
+    #     last_y = self.blobs[-1].y + 2 * safe_back_y
+    #     self.gameGrid = Grid(x_max=lane_width/2+1, y_max=last_y, size=[lane_width/2+1, last_y/2+1])
+    #     for blob in self.blobs:
+    #         x, y = self.gameGrid.toMatrixCoords(blob)
+    #         self.gameGrid.setTileScore(x, y, blob_score) # set score for the blob position tile on the game grid
+    #         self.gameGrid.setAdjacentScore(x, y, adjacent_score) # set score for the blob position adjacent tiles on the game grid
+            
 
     def autopilot(self, xcar, ycar, velocity):
         """
@@ -459,7 +477,8 @@ class CogCarSim:
         display_rate = refresh_rate
         
         car, left_lane, right_lane = self.create_objects(total_blobs, blob_seed, task, level)
-        
+        # self.create_grid(adjacent_score=2)
+                
         background_effect_left = 0 # how many rounds the collision effect (changed background color) will be in use
         last_collision = 0         # timestamp of the last collision
         collision_count = 0        # how many collisions so far
