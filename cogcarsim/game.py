@@ -16,12 +16,18 @@ class Grid:
     def __len__(self):
         return len(self.gameGrid)
         
-    def toMatrixCoords(self, blob):
-        x_blob = blob.x
-        y_blob = blob.y
-        x = int(round((self.x_range[1]-self.x_range[0])*(x_blob - self.x_min)/(self.x_max - self.x_min), 0) + self.x_range[0])
-        y = int(round((self.y_range[1]-self.y_range[0])*(y_blob - self.y_min)/(self.y_max - self.y_min), 0) + self.y_range[0])
-        return x, y
+    def toMatrixCoords(self, obj):
+        x_obj = obj.x
+        y_obj = obj.y
+        x = int(round((self.x_range[1]-self.x_range[0])*(x_obj-self.x_min)/(self.x_max-self.x_min), 0) + self.x_range[0])
+        y = int(round((self.y_range[1]-self.y_range[0])*(y_obj-self.y_min)/(self.y_max-self.y_min), 0) + self.y_range[0])
+        return y, x
+    
+    def toGameCoords(self, y, x):
+        x_obj = int(round((x-self.x_range[0])/(self.x_range[1]-self.x_range[0])*(self.x_max-self.x_min), 0) + self.x_min)
+        y_obj = int(round((y-self.y_range[0])/(self.y_range[1]-self.y_range[0])*(self.y_max-self.y_min), 0) + self.y_min)
+        return y_obj, x_obj
+        
     
     def setTileScore(self, y, x, score):
         self.gameGrid[y][x] = score

@@ -19,6 +19,14 @@ class Stats:
 
     @staticmethod
     def pathinfo(path):
+        """
+        Return info about the velocity of the whole path
+
+        :param path: path object
+        :type path: object
+        :return: min, max and average velocity
+        :rtype: Float
+        """
         if len(path) > 0:
             min_velocity = max_velocity = path[-1].velocity
             sum = 0.0
@@ -37,6 +45,36 @@ class Stats:
 
     @staticmethod
     def save(dbfilename, date, path, blobs, participant, run, task, seed, start_velocity, collisions, speed_drops, description, level):
+        """
+        Save the data into database
+
+        :param dbfilename: database name
+        :type dbfilename: str
+        :param date: date time
+        :type date: str
+        :param path: path object
+        :type path: object
+        :param blobs: blob objects
+        :type blobs: object
+        :param participant: name of the participant
+        :type participant: str
+        :param run: run id
+        :type run: int
+        :param task: task id
+        :type task: int
+        :param seed: blob_seed
+        :type seed: int
+        :param start_velocity: initial velocity
+        :type start_velocity: Float
+        :param collisions: numbers of collision
+        :type collisions: int
+        :param speed_drops: number of speed drop times
+        :type speed_drops: int
+        :param description:
+        :type description: str
+        :param level: level of the run
+        :type level: int
+        """
         if len(path) > 0:
             p2 = path[-1]
             p1 = path[0]
@@ -92,6 +130,11 @@ class Stats:
 
     @staticmethod
     def print_runs(dbfilename=None):
+        """
+        Print run basic info (Run id, participant name, date)
+        :param dbfilename: database name, defaults to None
+        :type dbfilename: str, optional
+        """
         try:
             conn = None
             if not os.path.exists(dbfilename):
@@ -132,6 +175,12 @@ class Stats:
 
     @staticmethod
     def get_last_run_number(dbfilename):
+        """
+        get the run id of the last run
+
+        :param dbfilename: database name
+        :type dbfilename: str
+        """
         try:
             conn = None
             if not os.path.exists(dbfilename):
@@ -157,6 +206,15 @@ class Stats:
 
     @staticmethod
     def get_control_positions(dbfilename, run):
+        """
+        Get the wheelpos and throttlepos 
+        from the given database and run id
+        
+        :param dbfilename: database name
+        :type dbfilename: str
+        :param run: run id
+        :type run: int
+        """
         try:
             conn = None
             if not os.path.exists(dbfilename):
@@ -184,6 +242,15 @@ class Stats:
 
     @staticmethod
     def get_run_info(dbfilename, run):
+        """
+        Get all the run info from given
+        database name and run id
+
+        :param dbfilename: database name
+        :type dbfilename: str
+        :param run: run id
+        :type run: int
+        """
         try:
             conn = None
             if not os.path.exists(dbfilename):

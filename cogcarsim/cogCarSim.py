@@ -81,6 +81,8 @@ nocollision_velocity_up = 0.0012
 
 max_name_len = 20
 
+score = 0.0
+
 # Level and map properties
 random_gen = True                                           # check if user choose to randomly generated a map or not
 current_level = 0                                           # keep track of current level for level up feature
@@ -292,7 +294,7 @@ class CogCarSim:
         last_y = self.blobs[-1].y + 2 * safe_back_y
         self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1])
         for blob in self.blobs:
-            x, y = self.gameGrid.toMatrixCoords(blob)
+            y, x = self.gameGrid.toMatrixCoords(blob)
             self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
             self.gameGrid.setAdjacentScore(y, x, adjacent_score) # set score for the blob position adjacent tiles on the game grid
             
@@ -472,6 +474,7 @@ class CogCarSim:
         :type throttle_positions: [type], optional
         :return: the run information
         """
+        global score
         
         self.define_display()
         display_rate = refresh_rate
@@ -480,7 +483,7 @@ class CogCarSim:
         self.create_grid(blob_score=1, adjacent_score=2)
         # for x in range(400):
         #     for y in range(13):
-        #         if self.gameGrid[x][y] == 0:
+        #         if self.gameGrid[x][y] == 0.0:
         #             print '-.-',
         #         else:
         #             print self.gameGrid[x][y],
@@ -611,8 +614,10 @@ class CogCarSim:
             
             # Collision detection and handing
             
+            car_y, car_x = self.gameGrid.toMatrixCoords(car.pos)            
             collision, collided_color = self.check_collision(car.pos.x, car.pos.y, step)
             if (collision):
+                score -= self.gameGrid[car_y][car_x]
                 collision_count = collision_count + 1
                 if task == auto_speed or task == fixed_speed:
                     self.scene.background = (0.5, 0.5, 0.5)
@@ -629,6 +634,10 @@ class CogCarSim:
                     if self.penalty_box(car.pos, penalty_time):
                         cheated = True
                     velocity = 0
+            else:
+                score += self.gameGrid[car_y][car_x]
+                if self.gameGrid[car_y][car_x] == 0.0:
+                    self.gameGrid.setTileScore(car_y, car_x, -1)
                     
             debug_label.text = 'Speed %.3f\nMaxSp %.3f\nSpeed drops %i\nCollisions %i\nBlobs %i\nGate %i ' % (velocity, max_velocity, collision_speed_drops, collision_count, self.first_visible_blob, len(self.gates))
             
