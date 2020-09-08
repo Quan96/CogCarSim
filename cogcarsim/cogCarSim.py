@@ -91,7 +91,7 @@ levels = {1: "map1.json", 2:"map2.json", 3:"map3.json",     # a dict contains le
 
 class CogCarSim:
     
-    def generate_blobs_trad(self, nblobs, blob_seed):
+    def generate_blobs_trad(self, nblobs, blob_seed, is_gate_on):
         """
         Randomly generates blob color and shape
         then add blob to the list
@@ -105,6 +105,7 @@ class CogCarSim:
         blob_random.seed(blob_seed)
         self.blobs = []
         self.gates = []
+        id = 0
         y = distance_to_first_blob
         for i in range(nblobs//chunk):
             for j in range(chunk):
@@ -122,13 +123,23 @@ class CogCarSim:
                 else:
                     shape = 2
                     color = 2
-                b = BlobEntry(j, x, y, shape, color)
+                b = BlobEntry(id, x, y, shape, color)
+                id += 1
                 self.blobs.append(b)
                 y += blob_y_distance
-            y += blob_y_distance * 2
-            speed_gate = SpeedGate(y, 1.6)
-            y += blob_y_distance * 10
-            self.gates.append(speed_gate)
+            if is_gate_on:
+                y += blob_y_distance * 2
+                speed_gate = SpeedGate(0, y, 1.6)
+                for i in range(-11, -1, 2):
+                    b = BlobEntry(id, i, y, 2, 2)
+                    id += 1
+                    self.blobs.append(b)
+                for i in range(3, 13, 2):
+                    b = BlobEntry(id, i, y, 2, 2)
+                    id += 1
+                    self.blobs.append(b)
+                y += blob_y_distance * 4
+                self.gates.append(speed_gate)
     
     def generate_blobs_mani(self, nblobs, blob_seed):
         """
@@ -196,7 +207,7 @@ class CogCarSim:
                         elif len(data) == 2:
                             y = float(data[0])
                             velocity = float(data[1])
-                            speed_gate = SpeedGate(y, velocity)
+                            speed_gate = SpeedGate(0, y, velocity)
                             self.gates.append(speed_gate)
                 elif levels[level].endswith(".txt"):
                     infor = file.readline()
@@ -213,7 +224,7 @@ class CogCarSim:
                         elif len(data) == 2:
                             y = float(data[0])
                             velocity = float(data[1])
-                            speed_gate = SpeedGate(y, velocity)
+                            speed_gate = SpeedGate(0, y, velocity)
                             self.gates.append(speed_gate)
                         infor = file.readline()
                 elif levels[level].endswith(".csv"):
@@ -231,7 +242,7 @@ class CogCarSim:
                         elif len(row) == 2:
                             y = float(row[0])
                             velocity = float(row[1])
-                            speed_gate = SpeedGate(y, velocity)
+                            speed_gate = SpeedGate(0, y, velocity)
                             self.gates.append(speed_gate)
                 file.close()
                 return lines
@@ -251,7 +262,7 @@ class CogCarSim:
         self.scene.select()
         self.scene.show_rendertime = 0
     
-    def create_objects(self, nblobs, blob_seed, task, level):   
+    def create_objects(self, nblobs, blob_seed, task, level, is_gate_on):   
         """
         Create the car object and 2 lanes
 
@@ -264,25 +275,27 @@ class CogCarSim:
         :return: the car object and 2 lanes
         :rtype: VPython object
         """
-        car = box(pos=(0, initial_car_y, 0), length=object_side, height=object_side, width=object_side, color=color.blue)
+        # car = box(pos=(0, initial_car_y, 0), length=object_side, height=object_side, width=object_side, color=color.blue)
+        car = Agent(velocity=default_start_velocity)
         left_lane = cylinder(pos=(left_lane_x, lane_back_y, rail_height), axis=(0, 1, 0), radius=lane_radius, length=lane_len, color=color.gray(0.2))
         right_lane = cylinder(pos=(right_lane_x, lane_back_y, rail_height), axis=(0, 1, 0), radius=lane_radius, length=lane_len, color=color.gray(0.2))
         
         if isRandom():
             if task == manual_speed:
-                self.generate_blobs_mani(nblobs, blob_seed)
+                self.generate_blobs_mani(nblobs, blob_seed, is_gate_on)
             else:
-                self.generate_blobs_trad(nblobs, blob_seed)
+                self.generate_blobs_trad(nblobs, blob_seed, is_gate_on)
         else:
             self.load_level(level=level)
         self.first_visible_blob = 0
         self.n_visible_blobs = 0
-        self.reposition_blobs(car.pos.y, 0)
+        carPos = car.getPosition()
+        self.reposition_blobs(carPos.y, 0)
         # self.gate_passed(car.pos.y)
         
         return car, left_lane, right_lane
     
-    def create_grid(self, blob_score=1, adjacent_score=0):
+    def create_grid(self, path_score=0.0, blob_score=1.0, adjacent_score=0.0, start_score=5.0, goal_score=100.0):
         """
         Create the matrix of the game to represent state space
 
@@ -292,11 +305,15 @@ class CogCarSim:
         :type adjacent_score: int, optional
         """
         last_y = self.blobs[-1].y + 2 * safe_back_y
-        self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1])
+        self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], goal_score=goal_score)
         for blob in self.blobs:
             y, x = self.gameGrid.toMatrixCoords(blob)
             self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
             self.gameGrid.setAdjacentScore(y, x, adjacent_score) # set score for the blob position adjacent tiles on the game grid
+        # initialize start and end point on grid
+        self.gameGrid.setTileScore(0, (lane_width//2+1)//2, start_score) # the car start position at the center of grid
+        last_row = range(0, lane_width//2+1)
+        self.gameGrid.setTileScore(-1, last_row, goal_score) # every tile of the last row can be considered as goal
             
 
     def autopilot(self, xcar, ycar, velocity):
@@ -392,17 +409,12 @@ class CogCarSim:
                 break
         return blob_passed
     
-    def gate_passed(self, ycar, is_gate_on):
-        velocity = 0
-        if len(self.gates) >= 1 and is_gate_on == True:
-            # if self.gates[0].y - ycar < lane_len:
-            #     self.gates[0].show()
-                
+    def gate_passed(self, xcar, ycar, is_gate_on, velocity, collided):
+        if len(self.gates) >= 1 and is_gate_on == True:     
             if self.gates[0].y < ycar - safe_back_y:
-                velocity = self.gates[0].get_velocity()
-                self.gates[0].hide()
+                if self.gates[0].x == int(xcar):
+                    velocity = self.gates[0].get_velocity()
                 del self.gates[0]
-        
         return velocity
     
     
@@ -479,22 +491,14 @@ class CogCarSim:
         self.define_display()
         display_rate = refresh_rate
         
-        car, left_lane, right_lane = self.create_objects(total_blobs, blob_seed, task, level)
-        self.create_grid(blob_score=1, adjacent_score=2)
-        # for x in range(400):
-        #     for y in range(13):
-        #         if self.gameGrid[x][y] == 0.0:
-        #             print '-.-',
-        #         else:
-        #             print self.gameGrid[x][y],
-        #     print
-          
-                
+        car, left_lane, right_lane = self.create_objects(total_blobs, blob_seed, task, level, is_gate_on)
+        self.create_grid(blob_score=1, adjacent_score=2, path_score=0)
+        
         background_effect_left = 0 # how many rounds the collision effect (changed background color) will be in use
         last_collision = 0         # timestamp of the last collision
         collision_count = 0        # how many collisions so far
         collision_speed_drops = 0 # how many punished (speed decreasing) collisions
-        debug_label = label(pos=car.pos, height=20, border=6, box=0, opacity=0) # debug info text on the car
+        debug_label = label(pos=car.getPosition(), height=20, border=6, box=0, opacity=0) # debug info text on the car
         debug_label.visible = False
         
         debug = False
@@ -513,8 +517,9 @@ class CogCarSim:
         step = 0
         max_velocity = velocity
         last_y = self.blobs[-1].y + 2 * safe_back_y
+        carPos = car.getPosition()
         #input handling
-        while car.y < last_y:
+        while carPos.y < last_y:
             if not batch:
                 rate(display_rate)
             clock_begin = time.clock()
@@ -552,12 +557,10 @@ class CogCarSim:
                 continue
             
             # blob housekeeping
-            passed = self.reposition_blobs(car.pos.y, step)
+            passed = self.reposition_blobs(carPos.y, step)
             
-            controlled_velocity = self.gate_passed(car.pos.y, is_gate_on)
-            
-            if controlled_velocity <> 0:
-                velocity = controlled_velocity
+            # if controlled_velocity <> 0:
+            #     velocity = controlled_velocity
                         
             if replay:
                 wheelpos = wheel_positions[step]
@@ -570,7 +573,10 @@ class CogCarSim:
                 clutchpos = c / 1000.0
                 
                 if autopiloting:
-                    wheelpos = self.autopilot(car.pos.x, car.pos.y, velocity)
+                    wheelpos = self.autopilot(carPos.x, carPos.y, velocity)
+                    
+                ## add reinforcement method here
+                
                 
             # Velocity changes here except collision effects
             if task == auto_speed:
@@ -587,7 +593,7 @@ class CogCarSim:
                 max_velocity = velocity
                 
             # Steering
-            xp = car.pos.x + wheelpos * velocity / wheel_sensitivity
+            xp = carPos.x + wheelpos * velocity / wheel_sensitivity
             
             if (xp > right_lane_x - lane_margin):
                 xp = right_lane_x - lane_margin
@@ -602,9 +608,9 @@ class CogCarSim:
             # All the movement happens here
             old_interval = sys.getcheckinterval()
             sys.setcheckinterval(100000)
-            car.pos.x = xp
-            car.pos.y = car.pos.y + velocity
-            debug_label.pos = car.pos
+            carPos.x = xp
+            carPos.y = carPos.y + velocity
+            debug_label.pos = carPos
             
             self.scene.center.x = xp
             self.scene.center.y = self.scene.center.y + velocity
@@ -614,8 +620,9 @@ class CogCarSim:
             
             # Collision detection and handing
             
-            car_y, car_x = self.gameGrid.toMatrixCoords(car.pos)            
-            collision, collided_color = self.check_collision(car.pos.x, car.pos.y, step)
+            car_y, car_x = self.gameGrid.toMatrixCoords(carPos)            
+            collision, collided_color = self.check_collision(carPos.x, carPos.y, step)
+            # velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity, collision)
             if (collision):
                 score -= self.gameGrid[car_y][car_x]
                 collision_count = collision_count + 1
@@ -631,20 +638,23 @@ class CogCarSim:
                         last_collision = step
                 elif task == manual_speed:
                     penalty_time = collision_penalty_time[collided_color]
-                    if self.penalty_box(car.pos, penalty_time):
+                    if self.penalty_box(carPos, penalty_time):
                         cheated = True
                     velocity = 0
             else:
                 score += self.gameGrid[car_y][car_x]
                 if self.gameGrid[car_y][car_x] == 0.0:
                     self.gameGrid.setTileScore(car_y, car_x, -1)
+                velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity, collision)
+                # elif self.gameGrid[car_y][car_x] == self.gameGrid.goal_score:
+                #     self.gameGrid.finished()
                     
             debug_label.text = 'Speed %.3f\nMaxSp %.3f\nSpeed drops %i\nCollisions %i\nBlobs %i\nGate %i ' % (velocity, max_velocity, collision_speed_drops, collision_count, self.first_visible_blob, len(self.gates))
             
             p = PathEntry()
             p.step = step
-            p.x = car.pos.x
-            p.y = car.pos.y
+            p.x = carPos.x
+            p.y = carPos.y
             p.collision = collision
             p.wheelpos = wheelpos
             p.throttlepos = throttlepos
@@ -668,7 +678,7 @@ class CogCarSim:
         print "Collisions", collision_count
         print "Collision speed drops", collision_speed_drops
         
-        start_label = label(pos=(car.pos.x, car.pos.y+40, car.pos.z), height=24, border=10, opacity=1)
+        start_label = label(pos=(carPos.x, carPos.y+40, carPos.z), height=24, border=10, opacity=1)
         start_label.text = 'Run finished'
         start_label.visible = True
         time.sleep(2)
@@ -702,3 +712,36 @@ def task_string(task, velocity):
     elif task == fixed_speed:
         s = "fixed {:3.1f}".format(velocity)
     return s
+
+class Agent:
+    def __init__(self, velocity):
+        self.car = box(pos=(0, initial_car_y, 0), length=object_side, height=object_side, width=object_side, color=color.blue)
+        self.velocity = velocity
+        
+    def move(self, wheelpos):
+        car_x = self.car.pos.x + wheelpos * self.velocity / wheel_sensitivity
+        car_y = self.car.pos.y + self.velocity
+        return car_x, car_y
+        
+    def getPosition(self):
+        return self.car.pos
+    
+    def updateVelocity(self, acceleration):
+        self.velocity += acceleration
+        
+    def setVelocity(self, new_velocity):
+        self.velocity = new_velocity
+        
+    def getLegalMove(self, wheelpos):
+        legal = []
+        car_x, _ = self.move(wheelpos)
+        if car_x > right_lane_x - lane_margin:
+            legal = ["FastLeft", "SlowLeft", "Straight"]
+            return legal
+        if car_x < left_lane_x + lane_margin:
+            legal = ["FastRight", "SlowRight", "Straight"]
+            return legal
+        legal = ["FastLeft", "SlowLeft", "FastRight", "SlowRight", "Straight"]
+        return legal
+    
+    

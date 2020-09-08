@@ -2,16 +2,18 @@ import numpy as np
 from math import ceil
 
 class Grid:
-    def __init__(self, x_min=-13, y_min=0, x_max=13, y_max=24188, size=[12095, 13]):
+    def __init__(self, x_min=-13, y_min=0, x_max=13, y_max=24188, 
+                 size=[12095, 13], path_score=0, goal_score=100.0, start_score=5.0):
         self.height = int(size[0])
         self.width = int(size[1])
-        self.gameGrid = np.zeros((self.height, self.width))
+        self.gameGrid = path_score * np.ones((self.height+1, self.width))
         self.x_min = x_min
         self.y_min = y_min
         self.x_max = x_max
         self.y_max = y_max
-        self.x_range = (0.0, float(self.width-1))
-        self.y_range = (0.0, float(self.height-1))
+        self.x_range = (0.0, float(self.width)-1)
+        self.y_range = (0.0, float(self.height)-1)
+        self._isGoal = False
         
     def __len__(self):
         return len(self.gameGrid)
@@ -42,3 +44,26 @@ class Grid:
     def __getitem__(self, key):
         return self.gameGrid[key]
     
+    def isFinish(self):
+        return self._isGoal
+    
+    def finished(self):
+        self._isGoal = True
+    
+class Actions:
+    _directions = {"FastLeft" : -100, "SlowLeft" : -50, 
+                  "FastRight":  100, "SlowRight":  50, 
+                  "Straight" :  0}
+    _directionsAsList = list(_directions.items())
+    
+    def reverseDirection(action):
+        if action == "FastLeft":
+            return _directions["FastRight"]
+        if action == "SlowLeft":
+            return _directions["SlowRight"]
+        if action == "FastRight":
+            return _directions["FastLeft"]
+        if action == "SlowRight":
+            return _directions["SlowLeft"]
+        return action
+    reverseDirection = staticmethod(reverseDirection)
