@@ -339,7 +339,7 @@ class CogCarSim:
         :type adjacent_score: int, optional
         """
         last_y = self.blobs[-1].y + 2 * safe_back_y
-        self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], goal_score=goal_score)
+        self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], path_score=path_score)
         for blob in self.blobs:
             y, x = self.gameGrid.toMatrixCoords(blob)
             self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
@@ -443,7 +443,7 @@ class CogCarSim:
                 break
         return blob_passed
     
-    def gate_passed(self, xcar, ycar, is_gate_on, velocity, collided):
+    def gate_passed(self, xcar, ycar, is_gate_on, velocity):
         if len(self.gates) >= 1 and is_gate_on == True:     
             if self.gates[0].y < ycar - safe_back_y:
                 if self.gates[0].x == int(xcar):
@@ -563,10 +563,22 @@ class CogCarSim:
                          start_score=start_score, goal_score=goal_score)
         
         #input handling
-        problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
-        actions, location = aStarSearch(problem, manhattanHeuristic)
+        # problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
+        # actions, locations = aStarSearch(problem, manhattanHeuristic)
         # print actions
         # reinforce = True
+        # for location in locations:
+        #     y = location[0]
+        #     x = location[1]
+        #     if self.gameGrid[y][x] == path_score:
+        #         self.gameGrid.setTileScore(y, x, -1)
+        #     if self.gameGrid[y][x] == blob_score:
+        #         self.gameGrid.setTileScore(y, x, -4)
+        
+        # for i in range(self.gameGrid.height):
+        #     for j in range(self.gameGrid.width):
+        #         print self.gameGrid[i][j],
+        #     print        
         
         while carPos.y < last_y:
             if not batch:
@@ -673,7 +685,7 @@ class CogCarSim:
             
             car_y, car_x = self.gameGrid.toMatrixCoords(carPos)            
             collision, collided_color = self.check_collision(carPos.x, carPos.y, step)
-            # velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity, collision)
+            # velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity)
             if (collision):
                 score -= self.gameGrid[car_y][car_x]
                 collision_count = collision_count + 1
@@ -693,11 +705,12 @@ class CogCarSim:
                         cheated = True
                     velocity = 0
             else:
-                if self.gameGrid[car_y][car_x] == path_score:
-                    self.gameGrid.setTileScore(car_y, car_x, -1)
-                if self.gameGrid[car_y][car_x] == blob_score:
-                    self.gameGrid.setTileScore(car_y, car_x, -4)
-                velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity, collision)
+                velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity)
+                
+                # if self.gameGrid[car_y][car_x] == path_score:
+                #     self.gameGrid.setTileScore(car_y, car_x, -1)
+                # if self.gameGrid[car_y][car_x] == blob_score:
+                #     self.gameGrid.setTileScore(car_y, car_x, -4)
                 # elif self.gameGrid[car_y][car_x] == self.gameGrid.goal_score:
                 #     self.gameGrid.finished()
                     
@@ -735,10 +748,10 @@ class CogCarSim:
         start_label.visible = True
         time.sleep(2)
         self.scene.visible = 0
-        for i in range(self.gameGrid.height):
-            for j in range(self.gameGrid.width):
-                print self.gameGrid[i][j],
-            print
+        # for i in range(self.gameGrid.height):
+        #     for j in range(self.gameGrid.width):
+        #         print self.gameGrid[i][j],
+        #     print
         
         #cheated = False
         return path, self.blobs, cheated, collision_count, collision_speed_drops, velocity
