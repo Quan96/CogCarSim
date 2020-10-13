@@ -526,8 +526,7 @@ class CogCarSim:
         display_rate = refresh_rate
         
         car, left_lane, right_lane = self.create_objects(total_blobs, blob_seed, task, level, is_gate_on)
-        # set different score for different problem
-        self.create_grid(path_score=1.0, blob_score=-10.0, adjacent_score=2.0, start_score=5.0, goal_score=1000.0)
+       
         
         background_effect_left = 0 # how many rounds the collision effect (changed background color) will be in use
         last_collision = 0         # timestamp of the last collision
@@ -553,11 +552,22 @@ class CogCarSim:
         max_velocity = velocity
         last_y = self.blobs[-1].y + 2 * safe_back_y
         carPos = car.getPosition()
+        
+        # set different score for different problem
+        path_score = 1.0
+        blob_score = -10.0
+        adjacent_score = 2.0
+        start_score = 5.0
+        goal_score = 1000.0
+        self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
+                         start_score=start_score, goal_score=goal_score)
+        
         #input handling
         problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
         actions, location = aStarSearch(problem, manhattanHeuristic)
         # print actions
-        reinforce = True
+        # reinforce = True
+        
         while carPos.y < last_y:
             if not batch:
                 rate(display_rate)
@@ -683,9 +693,10 @@ class CogCarSim:
                         cheated = True
                     velocity = 0
             else:
-                score += self.gameGrid[car_y][car_x]
-                if self.gameGrid[car_y][car_x] == 0.0:
+                if self.gameGrid[car_y][car_x] == path_score:
                     self.gameGrid.setTileScore(car_y, car_x, -1)
+                if self.gameGrid[car_y][car_x] == blob_score:
+                    self.gameGrid.setTileScore(car_y, car_x, -4)
                 velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity, collision)
                 # elif self.gameGrid[car_y][car_x] == self.gameGrid.goal_score:
                 #     self.gameGrid.finished()
@@ -724,8 +735,8 @@ class CogCarSim:
         start_label.visible = True
         time.sleep(2)
         self.scene.visible = 0
-        for i in self.gameGrid.height:
-            for j in self.gameGrid.width:
+        for i in range(self.gameGrid.height):
+            for j in range(self.gameGrid.width):
                 print self.gameGrid[i][j],
             print
         

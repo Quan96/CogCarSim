@@ -118,16 +118,12 @@ class ShortestPathProblem(SearchProblem):
             nextY, nextX = int(y + dy), int(x + dx)
             if nextX < 0:
                 nextState = (nextY, 0)
-                cost = self.costFn(nextState)
-                successors.append( (nextState, action, cost) )
             elif nextX > 12:
                 nextState = (nextY, 12)
-                cost = self.costFn(nextState)
-                successors.append( (nextState, action, cost) )
             else:
                 nextState = (nextY, nextX)
-                cost = self.costFn(nextState)
-                successors.append( (nextState, action, cost) )
+            cost = self.costFn(nextState)
+            successors.append( (nextState, action, cost) )
                 
         self._expanded += 1
         if state not in self._visited:
@@ -136,15 +132,15 @@ class ShortestPathProblem(SearchProblem):
             
         return successors
     
-    def getCostOfActions(self, actions):
-        # if actions == None: return 999999
-        y, x = self.getStartState()
-        cost = 0
-        for action in actions:
-            dy, dx = Actions.directionToVector(action)
-            y, x = int(y + dy), int(x + dx)
-            cost += self.costFn((y, x))
-        return cost
+    # def getCostOfActions(self, actions):
+    #     # if actions == None: return 999999
+    #     y, x = self.getStartState()
+    #     cost = 0
+    #     for action in actions:
+    #         dy, dx = Actions.directionToVector(action)
+    #         y, x = int(y + dy), int(x + dx)
+    #         cost += self.costFn( (y, x) )
+    #     return cost
     
 def manhattanHeuristic(position, problem):
     xy1 = position

@@ -3,7 +3,7 @@ import numpy as np
 
 class Grid:
     def __init__(self, x_min=-13, y_min=0, x_max=13, y_max=24188, 
-                 size=[12095, 13], path_score=0, goal_score=100.0, start_score=5.0):
+                 size=[12095, 13], path_score=0):
         self.height = int(size[0])
         self.width = int(size[1])
         self.gameGrid = path_score * np.ones((self.height+1, self.width))
@@ -14,7 +14,7 @@ class Grid:
         self.x_range = (0.0, float(self.width)-1)
         self.y_range = (0.0, float(self.height)-1)
         self._isGoal = False
-        self.goal = (self.height, 6)
+        self.goal = (self.height-1, 6)
         
     def __len__(self):
         return len(self.gameGrid)
