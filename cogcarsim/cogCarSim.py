@@ -16,6 +16,7 @@ from blobEntry import *
 from speedGate import *
 from pathEntry import *
 from game import *
+from search import *
 
 refresh_rate = 60
 default_start_velocity = 1.6
@@ -37,6 +38,7 @@ prob_gold_ball = 0.1
 manual_speed = 1
 auto_speed = 0
 fixed_speed = 2
+agent = 3
 
 # Display properties
 scene_center = (0, -1.0, 4.0)
@@ -82,12 +84,13 @@ nocollision_velocity_up = 0.0012
 max_name_len = 20
 
 score = 0.0
+reinforce = False
 
 # Level and map properties
 random_gen = True                                           # check if user choose to randomly generated a map or not
 current_level = 0                                           # keep track of current level for level up feature
 levels = {1: "map1.json", 2:"map2.json", 3:"map3.json",     # a dict contains levels and maps name
-          4:"map4.txt", 5:"map5.csv"}
+          4:"map4.txt", 5:"map5.csv", 6:"map6.txt"}
 
 class CogCarSim:
     
@@ -108,6 +111,19 @@ class CogCarSim:
         id = 0
         y = distance_to_first_blob
         for i in range(nblobs//chunk):
+            if is_gate_on and i != 0:
+                y += blob_y_distance * 2
+                speed_gate = SpeedGate(0, y, 1.6)
+                for i in range(-11, -1, 2):
+                    b = BlobEntry(id, i, y, 2, 2)
+                    id += 1
+                    self.blobs.append(b)
+                for i in range(3, 13, 2):
+                    b = BlobEntry(id, i, y, 2, 2)
+                    id += 1
+                    self.blobs.append(b)
+                y += blob_y_distance * 4
+                self.gates.append(speed_gate)
             for j in range(chunk):
                 x = blob_random.choice(blob_x_values)
                 r = blob_random.random()
@@ -127,19 +143,6 @@ class CogCarSim:
                 id += 1
                 self.blobs.append(b)
                 y += blob_y_distance
-            if is_gate_on:
-                y += blob_y_distance * 2
-                speed_gate = SpeedGate(0, y, 1.6)
-                for i in range(-11, -1, 2):
-                    b = BlobEntry(id, i, y, 2, 2)
-                    id += 1
-                    self.blobs.append(b)
-                for i in range(3, 13, 2):
-                    b = BlobEntry(id, i, y, 2, 2)
-                    id += 1
-                    self.blobs.append(b)
-                y += blob_y_distance * 4
-                self.gates.append(speed_gate)
     
     def generate_blobs_mani(self, nblobs, blob_seed):
         """
@@ -189,9 +192,10 @@ class CogCarSim:
         
         self.blobs = []
         self.gates = []
+        
         try:
             with open(path + os.sep + levels[level]) as file:
-                lines = 0
+                id = 0
                 if levels[level].endswith(".json"):
                     infor = json.load(file)
                     for data in infor["rows"]:
@@ -201,13 +205,23 @@ class CogCarSim:
                             y = float(data[1])
                             shape = float(data[2])
                             color = float(data[3])
-                            blob = BlobEntry(lines, x, y, shape, color)
+                            blob = BlobEntry(id, x, y, shape, color)
                             self.blobs.append(blob)
-                            lines += 1
-                        elif len(data) == 2:
-                            y = float(data[0])
-                            velocity = float(data[1])
-                            speed_gate = SpeedGate(0, y, velocity)
+                            id += 1
+                        elif len(data) == 3:
+                            x = float(data[0])
+                            y = float(data[1])
+                            velocity = float(data[2])
+                            speed_gate = SpeedGate(x, y, velocity)
+                            for i in range(-11, int(x-1), 2):
+                                b = BlobEntry(id, i, y, 2, 2)
+                                id += 1
+                                self.blobs.append(b)
+                            for i in range(int(x+3), 13, 2):
+                                b = BlobEntry(id, i, y, 2, 2)
+                                id += 1
+                                self.blobs.append(b)
+                            y += blob_y_distance * 4
                             self.gates.append(speed_gate)
                 elif levels[level].endswith(".txt"):
                     infor = file.readline()
@@ -218,13 +232,23 @@ class CogCarSim:
                             y = float(data[1])
                             shape = float(data[2])
                             color = float(data[3])
-                            blob = BlobEntry(lines, x, y, shape, color)
+                            blob = BlobEntry(id, x, y, shape, color)
                             self.blobs.append(blob)
-                            lines += 1
-                        elif len(data) == 2:
-                            y = float(data[0])
-                            velocity = float(data[1])
+                            id += 1
+                        elif len(data) == 3:
+                            x = float(data[0])
+                            y = float(data[1])
+                            velocity = float(data[2])
                             speed_gate = SpeedGate(0, y, velocity)
+                            for i in range(-11, int(x-1), 2):
+                                b = BlobEntry(id, i, y, 2, 2)
+                                id += 1
+                                self.blobs.append(b)
+                            for i in range(int(x+3), 13, 2):
+                                b = BlobEntry(id, i, y, 2, 2)
+                                id += 1
+                                self.blobs.append(b)
+                            y += blob_y_distance * 4
                             self.gates.append(speed_gate)
                         infor = file.readline()
                 elif levels[level].endswith(".csv"):
@@ -236,16 +260,26 @@ class CogCarSim:
                             y = float(row[1])
                             shape = float(row[2])
                             color = float(row[3])
-                            blob = BlobEntry(lines, x, y, shape, color)
+                            blob = BlobEntry(id, x, y, shape, color)
                             self.blobs.append(blob)
-                            lines += 1
-                        elif len(row) == 2:
-                            y = float(row[0])
-                            velocity = float(row[1])
+                            id += 1
+                        elif len(row) == 3:
+                            x = float(row[0])
+                            y = float(row[1])
+                            velocity = float(row[2])
                             speed_gate = SpeedGate(0, y, velocity)
+                            for i in range(-11, int(x-1), 2):
+                                b = BlobEntry(id, i, y, 2, 2)
+                                id += 1
+                                self.blobs.append(b)
+                            for i in range(int(x+3), 13, 2):
+                                b = BlobEntry(id, i, y, 2, 2)
+                                id += 1
+                                self.blobs.append(b)
+                            y += blob_y_distance * 4
                             self.gates.append(speed_gate)
                 file.close()
-                return lines
+                return id
         except IOError as e:
             print os.strerror(e.errno)
             return number_of_blobs
@@ -492,7 +526,8 @@ class CogCarSim:
         display_rate = refresh_rate
         
         car, left_lane, right_lane = self.create_objects(total_blobs, blob_seed, task, level, is_gate_on)
-        self.create_grid(blob_score=1, adjacent_score=2, path_score=0)
+        # set different score for different problem
+        self.create_grid(path_score=1.0, blob_score=-10.0, adjacent_score=2.0, start_score=5.0, goal_score=1000.0)
         
         background_effect_left = 0 # how many rounds the collision effect (changed background color) will be in use
         last_collision = 0         # timestamp of the last collision
@@ -519,6 +554,10 @@ class CogCarSim:
         last_y = self.blobs[-1].y + 2 * safe_back_y
         carPos = car.getPosition()
         #input handling
+        problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
+        actions, location = aStarSearch(problem, manhattanHeuristic)
+        # print actions
+        reinforce = True
         while carPos.y < last_y:
             if not batch:
                 rate(display_rate)
@@ -560,11 +599,14 @@ class CogCarSim:
             passed = self.reposition_blobs(carPos.y, step)
             
             # if controlled_velocity <> 0:
-            #     velocity = controlled_velocity
+                # velocity = controlled_velocity
                         
             if replay:
                 wheelpos = wheel_positions[step]
                 throttlepos = throttle_positions[step]
+            elif reinforce:
+                wheelpos = Actions.directionToWheel(actions[step])
+                throttlepos = 1000.0
             else:
                 (w, t, b, c) = wheel.getprecise()
                 wheelpos = w / 1000.0
@@ -573,10 +615,7 @@ class CogCarSim:
                 clutchpos = c / 1000.0
                 
                 if autopiloting:
-                    wheelpos = self.autopilot(carPos.x, carPos.y, velocity)
-                    
-                ## add reinforcement method here
-                
+                    wheelpos = self.autopilot(carPos.x, carPos.y, velocity)  
                 
             # Velocity changes here except collision effects
             if task == auto_speed:
@@ -586,6 +625,8 @@ class CogCarSim:
                 throttle_ratio = 1.0*(throttlepos - pedal_neutral) / (pedal_down - pedal_neutral)
                 velocity = sqrt((1.0-throttle_base)*velocity**2+2**throttle_multiply*throttle_base*throttle_ratio**throttle_power)
                 chosen_velocity = velocity
+            elif task == fixed_speed:
+                chosen_velocity = start_velocity
             else:
                 chosen_velocity = velocity
                 
@@ -683,6 +724,10 @@ class CogCarSim:
         start_label.visible = True
         time.sleep(2)
         self.scene.visible = 0
+        for i in self.gameGrid.height:
+            for j in self.gameGrid.width:
+                print self.gameGrid[i][j],
+            print
         
         #cheated = False
         return path, self.blobs, cheated, collision_count, collision_speed_drops, velocity
@@ -711,6 +756,8 @@ def task_string(task, velocity):
         s = "manual" 
     elif task == fixed_speed:
         s = "fixed {:3.1f}".format(velocity)
+    elif task == agent:
+        s = "agent"
     return s
 
 class Agent:
@@ -736,12 +783,10 @@ class Agent:
         legal = []
         car_x, _ = self.move(wheelpos)
         if car_x > right_lane_x - lane_margin:
-            legal = ["FastLeft", "SlowLeft", "Straight"]
+            legal = ["Left", "Straight"]
             return legal
         if car_x < left_lane_x + lane_margin:
-            legal = ["FastRight", "SlowRight", "Straight"]
+            legal = ["Right", "Straight"]
             return legal
-        legal = ["FastLeft", "SlowLeft", "FastRight", "SlowRight", "Straight"]
+        legal = ["Left", "Right", "Straight"]
         return legal
-    
-    

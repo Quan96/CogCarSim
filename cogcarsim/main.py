@@ -13,7 +13,7 @@ def get_name():
     task = 0
     focus = 0
     
-    tasknames = ["Auto", "Manual", "Fixed", "Fixed series"]
+    tasknames = ["Auto", "Manual", "Fixed", "Fixed series",  "Agent"]
     speed_changable = [True, False, True, False]
     
     bc = tc = (1.0, 1.0, 1.0)
@@ -81,15 +81,15 @@ def get_name():
             elif key == 'left':
                 if focus == 0:
                     pass
-                # elif focus == 1:
-                #     task = task - 1 if task > 0 else len(tasknames)-1
+                elif focus == 1:
+                    task = task - 1 if task > 0 else len(tasknames)-1
                 # elif focus == 2 and speed_changable[task]:
                 #     speed = speed - speed_increase if speed > min_speed else min_speed
             elif key == 'right' or key == ' ': 
                 if focus == 0:
                     pass
-                # elif focus == 1:
-                #      task = task + 1 if task < len(tasknames)-1 else 0
+                elif focus == 1:
+                     task = task + 1 if task < len(tasknames)-1 else 0
                 # elif focus == 2 and speed_changable[task]:
                 #      speed = speed + speed_increase if speed < max_speed else max_speed
             elif key == 'down': 
