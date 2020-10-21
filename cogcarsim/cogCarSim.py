@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 from visual import *
 display.enable_shaders = False
 import time
@@ -11,6 +12,7 @@ import errno
 import wheel
 import sys
 import csv
+
 
 from blobEntry import *
 from speedGate import *
@@ -281,7 +283,7 @@ class CogCarSim:
                 file.close()
                 return id
         except IOError as e:
-            print os.strerror(e.errno)
+            print(os.strerror(e.errno))
             return number_of_blobs
         
     def define_display(self):
@@ -342,8 +344,8 @@ class CogCarSim:
         self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], path_score=path_score)
         for blob in self.blobs:
             y, x = self.gameGrid.toMatrixCoords(blob)
-            self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
             self.gameGrid.setAdjacentScore(y, x, adjacent_score) # set score for the blob position adjacent tiles on the game grid
+            self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
         # initialize start and end point on grid
         self.gameGrid.setTileScore(0, (lane_width//2+1)//2, start_score) # the car start position at the center of grid
         last_row = range(0, lane_width//2+1)
@@ -451,6 +453,24 @@ class CogCarSim:
                 del self.gates[0]
         return velocity
     
+    def gridToLogFile(self, file_name, path_score, blob_score, adjacent_score):
+            path = 'logs/'
+            with open(path+file_name, 'a') as f:
+                f.writelines("%s" %datetime.datetime.now())
+                line='\n'
+                for i in range(self.gameGrid.height):
+                    line+='|'
+                    for j in range(self.gameGrid.width):
+                        if self.gameGrid[i][j] == path_score or self.gameGrid[i][j] == adjacent_score:
+                            line+=' '
+                        elif self.gameGrid[i][j] == blob_score:
+                            line+='b'
+                        else:
+                            line+='c'
+                    line+='|\n'
+                f.writelines(line)
+                f.writelines('------------------------------------------\n')
+                f.close()
     
     def check_collision(self, xcar, ycar, step):
         """
@@ -555,7 +575,7 @@ class CogCarSim:
         
         # set different score for different problem
         path_score = 1.0
-        blob_score = -10.0
+        blob_score = -100.0
         adjacent_score = 2.0
         start_score = 5.0
         goal_score = 1000.0
@@ -563,22 +583,21 @@ class CogCarSim:
                          start_score=start_score, goal_score=goal_score)
         
         #input handling
-        # problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
-        # actions, locations = aStarSearch(problem, manhattanHeuristic)
-        # print actions
-        # reinforce = True
-        # for location in locations:
-        #     y = location[0]
-        #     x = location[1]
-        #     if self.gameGrid[y][x] == path_score:
-        #         self.gameGrid.setTileScore(y, x, -1)
-        #     if self.gameGrid[y][x] == blob_score:
-        #         self.gameGrid.setTileScore(y, x, -4)
-        
-        # for i in range(self.gameGrid.height):
-        #     for j in range(self.gameGrid.width):
-        #         print self.gameGrid[i][j],
-        #     print        
+        problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
+        actions, locations = aStarSearch(problem, nullHeuristic)
+        # print(actions)
+        reinforce = True
+        for location in locations:
+            y = location[0]
+            x = location[1]
+            if self.gameGrid[y][x] == path_score:
+                self.gameGrid.setTileScore(y, x, -2)
+            if self.gameGrid[y][x] == adjacent_score:
+                self.gameGrid.setTileScore(y, x, -4)
+            # if self.gameGrid[y][x] == blob_score:
+            #     self.gameGrid.setTileScore(y, x, -4)
+                
+        self.gridToLogFile('main.txt', path_score, blob_score, adjacent_score)
         
         while carPos.y < last_y:
             if not batch:
@@ -706,13 +725,6 @@ class CogCarSim:
                     velocity = 0
             else:
                 velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity)
-                
-                # if self.gameGrid[car_y][car_x] == path_score:
-                #     self.gameGrid.setTileScore(car_y, car_x, -1)
-                # if self.gameGrid[car_y][car_x] == blob_score:
-                #     self.gameGrid.setTileScore(car_y, car_x, -4)
-                # elif self.gameGrid[car_y][car_x] == self.gameGrid.goal_score:
-                #     self.gameGrid.finished()
                     
             debug_label.text = 'Speed %.3f\nMaxSp %.3f\nSpeed drops %i\nCollisions %i\nBlobs %i\nGate %i ' % (velocity, max_velocity, collision_speed_drops, collision_count, self.first_visible_blob, len(self.gates))
             
@@ -734,24 +746,20 @@ class CogCarSim:
         
         clock_diff = path[-1].clock_begin - path[0].clock_begin
         step_diff = path[-1].step - path[0].step
-        print "Time:", clock_diff
-        print "Average step duration:", clock_diff / step_diff
-        print "Steps per second", step_diff / clock_diff
-        print "Total steps", step_diff
-        print "End speed", velocity
-        print "Max speed", max_velocity
-        print "Collisions", collision_count
-        print "Collision speed drops", collision_speed_drops
+        print("Time:", clock_diff)
+        print("Average step duration:", clock_diff / step_diff)
+        print("Steps per second", step_diff / clock_diff)
+        print("Total steps", step_diff)
+        print("End speed", velocity)
+        print("Max speed", max_velocity)
+        print("Collisions", collision_count)
+        print("Collision speed drops", collision_speed_drops)
         
         start_label = label(pos=(carPos.x, carPos.y+40, carPos.z), height=24, border=10, opacity=1)
         start_label.text = 'Run finished'
         start_label.visible = True
         time.sleep(2)
         self.scene.visible = 0
-        # for i in range(self.gameGrid.height):
-        #     for j in range(self.gameGrid.width):
-        #         print self.gameGrid[i][j],
-        #     print
         
         #cheated = False
         return path, self.blobs, cheated, collision_count, collision_speed_drops, velocity
