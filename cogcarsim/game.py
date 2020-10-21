@@ -6,6 +6,7 @@ class Grid:
                  size=[12095, 13], path_score=0):
         self.height = int(size[0])
         self.width = int(size[1])
+        self.path_score = path_score
         self.gameGrid = path_score * np.ones((self.height+1, self.width))
         self.x_min = x_min
         self.y_min = y_min
@@ -35,10 +36,14 @@ class Grid:
         self.gameGrid[y][x] = score
         
     def setAdjacentScore(self, y, x, score):
-        self.setTileScore(y+1, x, score)    # up
-        self.setTileScore(y-1, x, score)    # down
-        self.setTileScore(y, x+1, score)    # right
-        self.setTileScore(y, x-1, score)    # left
+        if self.gameGrid[y+1][x] == self.path_score:
+            self.setTileScore(y+1, x, score)    # up
+        if self.gameGrid[y-1][x] == self.path_score:
+            self.setTileScore(y-1, x, score)    # down
+        if self.gameGrid[y][x+1] == self.path_score:
+            self.setTileScore(y, x+1, score)    # right
+        if self.gameGrid[y][x-1] == self.path_score:
+            self.setTileScore(y, x-1, score)    # left
     
     def __getitem__(self, key):
         return self.gameGrid[key]
