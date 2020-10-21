@@ -1,0 +1,912 @@
+2020-10-20 11:53:20.760000
+|      c      |
+|     c       |
+|    c        |
+|   c         |
+|  c          |
+| c           |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| c           |
+|  c          |
+|   b         |
+|    c        |
+|     c       |
+|      c      |
+|       c     |
+|        c    |
+|         b   |
+|        c    |
+|       c     |
+|      c      |
+|     c       |
+|      c      |
+|       b     |
+|      c      |
+|     c       |
+|    c        |
+|   c         |
+|  c          |
+| c           |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+| c           |
+|  c          |
+|   c         |
+|    c        |
+|     c       |
+|      c      |
+|       c     |
+|        c    |
+|         b   |
+|        c    |
+|       c     |
+|      c      |
+|       c     |
+|       c     |
+|        b    |
+|       c     |
+|      c      |
+|       c     |
+|        c    |
+|         c   |
+|          b  |
+|         c   |
+|        c    |
+|       c     |
+|      c      |
+|     c       |
+|      b      |
+|     c       |
+|    c        |
+|     c       |
+|      c      |
+|      c      |
+|       b     |
+|      c      |
+|     c       |
+|    c        |
+|     c       |
+|     c       |
+|      b      |
+|     c       |
+|      c      |
+|       c     |
+|        c    |
+|         c   |
+|          b  |
+|         c   |
+|        c    |
+|       c     |
+|      c      |
+|     c       |
+|      b      |
+|     c       |
+|      c      |
+|       c     |
+|        c    |
+|         c   |
+|          b  |
+|         c   |
+|        c    |
+|       c     |
+|      c      |
+|      c      |
+|       b     |
+|      c      |
+|     c       |
+|      c      |
+|       c     |
+|       c     |
+|        b    |
+|       c     |
+|      c      |
+|     c       |
+|    c        |
+|     c       |
+|      b      |
+|     c       |
+|    c        |
+|   c         |
+|  c          |
+|  c          |
+|   b         |
+|    c        |
+|     c       |
+|      c      |
+|       c     |
+|        c    |
+|         b   |
+|        c    |
+|       c     |
+|      c      |
+|     c       |
+|     c       |
+|    b        |
+|   c         |
+|  c          |
+|   c         |
+|    c        |
+|     c       |
+|      b      |
+|     c       |
+|    c        |
+|   c         |
+|    c        |
+|     c       |
+|      b      |
+|     c       |
+|    c        |
+|   c         |
+|    c        |
+|     c       |
+|      b      |
+|       c     |
+|        c    |
+|         c   |
+|          c  |
+|          c  |
+|           b |
+|          c  |
+|         c   |
+|        c    |
+|       c     |
+|      c      |
+|    b  c     |
+|      c      |
+|       c     |
+|        c    |
+|         c   |
+|         c   |
+|          b  |
+|         c   |
+|        c    |
+|       c     |
+|      c      |
+|      c      |
+|     b       |
+|    c        |
+|     c       |
+|      c      |
+|       c     |
+|        c    |
+|         b   |
+|        c    |
+|       c     |
+|      c      |
+|     c       |
+|     c       |
+|      b      |
+|     c       |
+|    c        |
+|   c         |
+|  c          |
+|   c         |
+|    b        |
+|   c         |
+|    c        |
+|     c       |
+|      c      |
+|      c      |
+|       b     |
+|      c      |
+|     c       |
+|    c        |
+|   c         |
+|  c          |
+|   b         |
+|  c          |
+| c           |
+|  c          |
+|   c         |
+|   c         |
+|    b        |
+|   c         |
+|  c          |
+|   c         |
+|    c        |
+|     c       |
+|      b      |
+|     c       |
+|      c      |
+|       c     |
+|        c    |
+|         c   |
+|          b  |
+|         c   |
+|        c    |
+|       c     |
+|      c      |
+|      c      |
+|     b       |
+|    c        |
+|   c         |
+|  c          |
+| c           |
+|  c          |
+|   b         |
+|  c          |
+| c           |
+|c            |
+|c            |
+| c           |
+|  c       b  |
+|   c         |
+|    c        |
+|     c       |
+|      c      |
+|       c     |
+|        b    |
+|       c     |
+|      c      |
+|     c       |
+|    c        |
+|    c        |
+|     b       |
+|    c        |
+|   c         |
+|    c        |
+|     c       |
+|      c      |
+|       b     |
+|      c      |
+|     c       |
+|    c        |
+|     c       |
+|     c       |
+|      b      |
+|     c       |
+|    c        |
+|   c         |
+|  c          |
+|  c          |
+|   b         |
+|  c          |
+| c           |
+|c            |
+|c            |
+|c            |
+| c         b |
+|  c          |
+|   c         |
+|    c        |
+|     c       |
+|      c      |
+------------------------------------------
+2020-10-21 10:59:09.590000
+|      c      |
+|     c       |
+|    c        |
+|   c         |
+|  c          |
+| c           |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbb bbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbb bbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbb bbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbb  bbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbb  bb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbb   |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbb  bb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbb  bbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbb bbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbb bbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbb bbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbb  bbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bb  bbbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bb  bbbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bb  bbbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bb  bbbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| b  bbbbbbbb |
+|c            |
+|c            |
+|c            |
+| c           |
+|  c          |
+|   bbbbbbbbb |
+|  c          |
+| c           |
+|c            |
+| c           |
+|  c          |
+|   bbbbbbbbb |
+|  c          |
+| c           |
+|c            |
+| c           |
+|  c          |
+|   bbbbbbbbb |
+|  c          |
+| c           |
+|c            |
+|c            |
+| c           |
+|  bbbbbbbbbb |
+| c           |
+|c            |
+|c            |
+|c            |
+| c           |
+|  bbbbbbbbbb |
+| c           |
+|c            |
+|c            |
+|c            |
+| c           |
+|  bbbbbbbbbb |
+| c           |
+|c            |
+|c            |
+|c            |
+| c           |
+|  bbbbbbbbbb |
+| c           |
+|c            |
+|c            |
+| c           |
+|  c          |
+|   bbbbbbbbb |
+|  c          |
+| c           |
+|c            |
+|c            |
+|c            |
+| b  bbbbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bb  bbbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbb  bbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbb bbbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbb bbbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbb bbbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbb  bbb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbb  bb |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbb   |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbb   |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbb   |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbb  b |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|c            |
+|c            |
+|c            |
+|c            |
+|c            |
+| bbbbbbbbbb  |
+|  c          |
+|   c         |
+|    c        |
+|     c       |
+|      c      |
+------------------------------------------
