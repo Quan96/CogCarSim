@@ -14,7 +14,7 @@ def get_name():
     focus = 0
     
     tasknames = ["Auto", "Manual", "Fixed", "Fixed series",  "Agent"]
-    speed_changable = [True, False, True, False]
+    speed_changable = [True, False, True, False, True]
     
     bc = tc = (1.0, 1.0, 1.0)
     angle = 0.01
@@ -85,7 +85,7 @@ def get_name():
                     task = task - 1 if task > 0 else len(tasknames)-1
                 # elif focus == 2 and speed_changable[task]:
                 #     speed = speed - speed_increase if speed > min_speed else min_speed
-            elif key == 'right' or key == ' ': 
+            elif key == 'right' or key == ' ':
                 if focus == 0:
                     pass
                 elif focus == 1:
@@ -103,15 +103,15 @@ def get_name():
             elif key == 'end-of-line':
                 break
             
-        speed_label.color = (0.2, 0.2, 0.2) if task != auto_speed and task != fixed_speed else (1.0, 1.0, 1.0)
-        speed_label.linecolor = (0.2, 0.2, 0.2) if task != auto_speed and task != fixed_speed  else (1.0, 1.0, 1.0)
+        speed_label.color = (0.2, 0.2, 0.2) if task != auto_speed and task != fixed_speed and task != agent_speed else (1.0, 1.0, 1.0)
+        speed_label.linecolor = (0.2, 0.2, 0.2) if task != auto_speed and task != fixed_speed and task != agent_speed  else (1.0, 1.0, 1.0)
         
     name = name.text
     level_text = level.text
     scene.visible = False
     if name == "":
         name = "Anonymous"
-    if task != auto_speed and task != fixed_speed:
+    if task != auto_speed and task != fixed_speed and task != agent_speed:
         speed = 0.0
     if level_text == "" and focus <> 5:
         setRandom(True)
@@ -180,7 +180,7 @@ def show_high(name, task, selected_velocity, duration, collisions, speed_drops, 
     subtitle = "High Scores"
     m, s = divmod(duration, 60)    
     
-    if task == auto_speed:
+    if task == auto_speed or task == agent_speed:
         show_fame(titletext = "{}'s time (collisions)".format(name), 
                   current = "{:.0f} min {:.0f} s ({})".format(m, s, collisions), # show elapsed time and collisions
                   subtitle = subtitle,
@@ -230,7 +230,7 @@ def test_run():
             show_high(name=None, task=game, selected_velocity=vel, collisions=None, duration=None, speed_drop=None, end_velocity=None)
         return
     
-    if not game in {manual_speed, auto_speed, fixed_speed}:
+    if not game in {manual_speed, auto_speed, fixed_speed, agent_speed}:
         blob_seed, nblobs, task, selected_velocity, description = get_test_details(name, game)
     else:
         task = game
