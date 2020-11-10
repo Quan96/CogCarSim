@@ -4,3 +4,4 @@
 *.7z
 *.db
 *.pyc
+logs/*
