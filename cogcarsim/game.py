@@ -3,10 +3,12 @@ import numpy as np
 
 class Grid:
     def __init__(self, x_min=-13, y_min=0, x_max=13, y_max=24188, 
-                 size=[12095, 13], path_score=0):
+                 size=[12095, 13], path_score=0, blob_score=-10, adjacent_score=2):
         self.height = int(size[0])
         self.width = int(size[1])
         self.path_score = path_score
+        self.blob_score = blob_score
+        self.adjacent_score = adjacent_score
         self.gameGrid = path_score * np.ones((self.height+1, self.width))
         self.x_min = x_min
         self.y_min = y_min
@@ -53,9 +55,6 @@ class Grid:
     
     def finished(self):
         self._isGoal = True
-        
-    # def __str__(self):
-        # return self.gameGrid
 
 class Actions:
     LEFT = "Left"

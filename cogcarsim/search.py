@@ -68,6 +68,9 @@ def aStarSearch(problem, heuristic):
                     locations.push( location + [successor[0]], totalCost )
                     
     return None
+
+# class MonteCarloTreeSearch(object):
+    
         
 def nullHeuristic(state, problem=None):
     """
@@ -147,28 +150,45 @@ def manhattanHeuristic(position, problem):
     xy2 = problem.goal
     return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
-# class SafestPathProblem(SearchProblem):
-#     def __init__(self, costFn, goal=(12095, 0), start=None):
-#         self.startState = (0, 6) # the center of the start
-#         if start != None: self.startState = start
-#         self.goal = goal
-#         self.costFn = costFn
+class SafestPathProblem(SearchProblem):
+    def __init__(self, costFn, goal=(12095, 0), start=None):
+        self.startState = (0, 6) # the center of the start
+        if start != None: self.startState = start
+        self.goal = goal
+        self.costFn = costFn
         
-#         # For display purpose
-#         self._visited, self._visitedlist, self._expanded = {}, [], 0
+        # For display purpose
+        self._visited, self._visitedlist, self._expanded = {}, [], 0
         
-#     def getStartState(self):
-#         return self.startState
+    def getStartState(self):
+        return self.startState
     
-#     def isGoalState(self, state):
-#         isGoal = state == self.goal
+    def isGoalState(self, state):
+        isGoal = state == self.goal
         
-#         if isGoal:
-#             self._visitedlist.append(state)
+        if isGoal:
+            self._visitedlist.append(state)
             
-#         return isGoal
+        return isGoal
     
-#     def getSuccessors(self, state):
-#         successors = []
-#         for action in [Actions.LEFT, Actions.RIGHT, Actions.STRAIGHT]:
-#             y, x = state
+    def getSuccessors(self, state):
+        successors = []
+        for action in [Actions.LEFT, Actions.RIGHT, Actions.STRAIGHT]:
+            y, x = state
+            dy, dx = Actions.directionToVector(action)  #modified
+            nextY, nextX = int(y + dy), int(x + dx)
+            if nextX < 0:
+                nextState = (nextY, 0)
+            elif nextX > 12:
+                nextState = (nextY, 12)
+            else:
+                nextState = (nextY, nextX)
+            cost = self.costFn(nextState)
+            successors.append( (nextState, action, cost) )
+                
+        self._expanded += 1
+        if state not in self._visited:
+            self._visited[state] = True
+            self._visitedlist.append(state)
+            
+        return successors

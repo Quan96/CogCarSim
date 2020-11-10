@@ -40,7 +40,7 @@ prob_gold_ball = 0.1
 manual_speed = 1
 auto_speed = 0
 fixed_speed = 2
-agent = 3
+agent_speed = 4
 
 # Display properties
 scene_center = (0, -1.0, 4.0)
@@ -92,7 +92,8 @@ reinforce = False
 random_gen = True                                           # check if user choose to randomly generated a map or not
 current_level = 0                                           # keep track of current level for level up feature
 levels = {1: "map1.json", 2:"map2.json", 3:"map3.json",     # a dict contains levels and maps name
-          4:"map4.txt", 5:"map5.csv", 6:"map6.txt"}
+          4:"map4.txt", 5:"map5.csv", 6:"map6.txt",
+          7:"map7.txt"}
 
 class CogCarSim:
     
@@ -341,11 +342,12 @@ class CogCarSim:
         :type adjacent_score: int, optional
         """
         last_y = self.blobs[-1].y + 2 * safe_back_y
-        self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], path_score=path_score)
+        self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], 
+                             path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score)
         for blob in self.blobs:
             y, x = self.gameGrid.toMatrixCoords(blob)
-            self.gameGrid.setAdjacentScore(y, x, adjacent_score) # set score for the blob position adjacent tiles on the game grid
             self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
+            self.gameGrid.setAdjacentScore(y, x, adjacent_score) # set score for the blob position adjacent tiles on the game grid
         # initialize start and end point on grid
         self.gameGrid.setTileScore(0, (lane_width//2+1)//2, start_score) # the car start position at the center of grid
         last_row = range(0, lane_width//2+1)
@@ -453,7 +455,7 @@ class CogCarSim:
                 del self.gates[0]
         return velocity
     
-    def gridToLogFile(self, file_name, path_score, blob_score, adjacent_score):
+    def gridToLogFile(self, file_name, path_score, blob_score, adjacent_score, collision_score, car_score):
             path = 'logs/'
             with open(path+file_name, 'a') as f:
                 f.writelines("%s" %datetime.datetime.now())
@@ -465,7 +467,9 @@ class CogCarSim:
                             line+=' '
                         elif self.gameGrid[i][j] == blob_score:
                             line+='b'
-                        else:
+                        elif self.gameGrid[i][j] == collision_score:
+                            line+='x'
+                        elif self.gameGrid[i][j] == car_score:
                             line+='c'
                     line+='|\n'
                 f.writelines(line)
@@ -541,6 +545,7 @@ class CogCarSim:
         :return: the run information
         """
         global score
+        global reinforce
         
         self.define_display()
         display_rate = refresh_rate
@@ -575,29 +580,32 @@ class CogCarSim:
         
         # set different score for different problem
         path_score = 1.0
-        blob_score = -100.0
+        blob_score = 10.0
+        car_score = -10.0
         adjacent_score = 2.0
         start_score = 5.0
         goal_score = 1000.0
+        collision_score = -1.0
         self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
                          start_score=start_score, goal_score=goal_score)
         
         #input handling
-        problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
-        actions, locations = aStarSearch(problem, nullHeuristic)
         # print(actions)
-        reinforce = True
-        for location in locations:
-            y = location[0]
-            x = location[1]
-            if self.gameGrid[y][x] == path_score:
-                self.gameGrid.setTileScore(y, x, -2)
-            if self.gameGrid[y][x] == adjacent_score:
-                self.gameGrid.setTileScore(y, x, -4)
-            # if self.gameGrid[y][x] == blob_score:
-            #     self.gameGrid.setTileScore(y, x, -4)
+        if task == agent_speed:
+            reinforce = True
+            problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
+            actions, locations = aStarSearch(problem, manhattanHeuristic)
+            for location in locations:
+                y = location[0]
+                x = location[1]
+                if self.gameGrid[y][x] == path_score:
+                    self.gameGrid.setTileScore(y, x, car_score)
+                if self.gameGrid[y][x] == adjacent_score:
+                    self.gameGrid.setTileScore(y, x, car_score)
+                if self.gameGrid[y][x] == blob_score:
+                    self.gameGrid.setTileScore(y, x, collision_score)
                 
-        self.gridToLogFile('main.txt', path_score, blob_score, adjacent_score)
+            self.gridToLogFile('main.txt', path_score, blob_score, adjacent_score, collision_score, car_score)
         
         while carPos.y < last_y:
             if not batch:
@@ -659,7 +667,7 @@ class CogCarSim:
                     wheelpos = self.autopilot(carPos.x, carPos.y, velocity)  
                 
             # Velocity changes here except collision effects
-            if task == auto_speed:
+            if task == auto_speed or task == agent_speed:
                 chosen_velocity = velocity # to be used in collision analyses
                 velocity += passed * nocollision_velocity_up
             elif task == manual_speed:
@@ -708,11 +716,11 @@ class CogCarSim:
             if (collision):
                 score -= self.gameGrid[car_y][car_x]
                 collision_count = collision_count + 1
-                if task == auto_speed or task == fixed_speed:
+                if task == auto_speed or task == fixed_speed or task == agent_speed:
                     self.scene.background = (0.5, 0.5, 0.5)
                     background_effect_left += 5
                     if (step - last_collision > collision_grace_period):
-                        if task == auto_speed:
+                        if task == auto_speed or task == agent_speed:
                             velocity -= collision_velocity_down 
                             if (velocity < guaranteed_velocity):
                                 velocity = guaranteed_velocity
@@ -788,8 +796,8 @@ def task_string(task, velocity):
         s = "manual" 
     elif task == fixed_speed:
         s = "fixed {:3.1f}".format(velocity)
-    elif task == agent:
-        s = "agent"
+    elif task == agent_speed:
+        s = "agent {:3.1f}".format(velocity)
     return s
 
 class Agent:
