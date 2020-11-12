@@ -580,11 +580,11 @@ class CogCarSim:
         
         # set different score for different problem
         path_score = 1.0
-        blob_score = 10.0
-        car_score = -10.0
         adjacent_score = 2.0
         start_score = 5.0
-        goal_score = 1000.0
+        blob_score = 10.0
+        car_score = -10.0
+        goal_score = -100.0
         collision_score = -1.0
         self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
                          start_score=start_score, goal_score=goal_score)
@@ -593,19 +593,25 @@ class CogCarSim:
         # print(actions)
         if task == agent_speed:
             reinforce = True
-            problem = ShortestPathProblem(goal=self.gameGrid.goal, costFn=self.gameGrid.__getitem__)
-            actions, locations = aStarSearch(problem, manhattanHeuristic)
-            for location in locations:
-                y = location[0]
-                x = location[1]
-                if self.gameGrid[y][x] == path_score:
-                    self.gameGrid.setTileScore(y, x, car_score)
-                if self.gameGrid[y][x] == adjacent_score:
-                    self.gameGrid.setTileScore(y, x, car_score)
-                if self.gameGrid[y][x] == blob_score:
-                    self.gameGrid.setTileScore(y, x, collision_score)
+            windows = self.gameGrid.slidingWindow(0.5)     # 50% overlap
+            # problem = ShortestPathProblem(grid=self.gameGrid, costFn=self.gameGrid.__getitem__)
+            # actions, locations = aStarSearch(problem, manhattanHeuristic)
+            for (window, window_goal) in windows:
+                pass
+                # problem = ShortestPathProblem(grid=window, costFn=window.__getitem__)
+                # actions, locations = aStarSearch(problem, manhattanHeuristic)
+            
+                # for location in locations:
+                #     y = location[0]
+                #     x = location[1]
+                #     if self.gameGrid[y][x] == path_score:
+                #         self.gameGrid.setTileScore(y, x, car_score)
+                #     if self.gameGrid[y][x] == adjacent_score:
+                #         self.gameGrid.setTileScore(y, x, car_score)
+                #     if self.gameGrid[y][x] == blob_score:
+                #         self.gameGrid.setTileScore(y, x, collision_score)
                 
-            self.gridToLogFile('main.txt', path_score, blob_score, adjacent_score, collision_score, car_score)
+            # self.gridToLogFile('main.txt', path_score, blob_score, adjacent_score, collision_score, car_score)
         
         while carPos.y < last_y:
             if not batch:

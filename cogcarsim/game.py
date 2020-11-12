@@ -55,6 +55,12 @@ class Grid:
     
     def finished(self):
         self._isGoal = True
+        
+    def slidingWindow(self, overlap):
+        windowSize = (self.height // 10, self.width-1)
+        step = int(windowSize[0]*overlap)
+        for y in range(0, self.height, step):
+            yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6))  # yield the sliding window and its goal
 
 class Actions:
     LEFT = "Left"

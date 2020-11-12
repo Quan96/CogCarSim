@@ -1,6 +1,6 @@
 import sys
 import heapq
-from game import Actions
+from game import Actions, Grid
 
 class Node:
     def __init__(self, state, parent, action):
@@ -56,17 +56,15 @@ def aStarSearch(problem, heuristic):
         currentNode=actions.pop()
         location = locations.pop()
         if problem.isGoalState(currentNode[0]):
-            # print location
             return currentNode[1], location
         if currentNode[0] not in visited:
-            visited.add(currentNode[0])
+            visited.add(currentNode[0])  
             for successor in problem.getSuccessors(currentNode[0]):
                 if successor[0] not in visited:
                     cost = currentNode[2] + successor[2]
                     totalCost = cost + heuristic(successor[0], problem)
                     actions.push( (successor[0], currentNode[1]+[successor[1]], cost), totalCost )
                     locations.push( location + [successor[0]], totalCost )
-                    
     return None
 
 # class MonteCarloTreeSearch(object):
@@ -93,10 +91,11 @@ class SearchProblem:
         raise NotImplemented
 
 class ShortestPathProblem(SearchProblem):
-    def __init__(self, costFn = lambda x: 1, goal=(12095, 0), start=None):
+    def __init__(self, costFn, grid, start=None):
         self.startState = (0, 6) # the center of the start
         if start != None: self.startState=start
-        self.goal = goal
+        self.grid = grid
+        self.goal = grid.goal
         self.costFn = costFn
         
         # For display purposes
@@ -119,6 +118,8 @@ class ShortestPathProblem(SearchProblem):
             y, x = state
             dy, dx = Actions.directionToVector(action)  #modified
             nextY, nextX = int(y + dy), int(x + dx)
+            if nextY >= self.grid.height - 1:
+                nextState = (y, nextX)
             if nextX < 0:
                 nextState = (nextY, 0)
             elif nextX > 12:
@@ -144,17 +145,13 @@ class ShortestPathProblem(SearchProblem):
     #         y, x = int(y + dy), int(x + dx)
     #         cost += self.costFn( (y, x) )
     #     return cost
-    
-def manhattanHeuristic(position, problem):
-    xy1 = position
-    xy2 = problem.goal
-    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
 
 class SafestPathProblem(SearchProblem):
-    def __init__(self, costFn, goal=(12095, 0), start=None):
+    def __init__(self, costFn, grid, start=None):
         self.startState = (0, 6) # the center of the start
         if start != None: self.startState = start
-        self.goal = goal
+        self.grid = grid
+        self.goal = grid.goal
         self.costFn = costFn
         
         # For display purpose
@@ -177,6 +174,8 @@ class SafestPathProblem(SearchProblem):
             y, x = state
             dy, dx = Actions.directionToVector(action)  #modified
             nextY, nextX = int(y + dy), int(x + dx)
+            if nextY >= self.grid.height-1:
+                nextState = (y, nextX)
             if nextX < 0:
                 nextState = (nextY, 0)
             elif nextX > 12:
@@ -192,3 +191,8 @@ class SafestPathProblem(SearchProblem):
             self._visitedlist.append(state)
             
         return successors
+    
+def manhattanHeuristic(position, problem):
+    xy1 = position
+    xy2 = problem.goal
+    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
