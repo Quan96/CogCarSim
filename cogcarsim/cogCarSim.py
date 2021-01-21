@@ -50,7 +50,7 @@ scene_range = (9.0, 9.0, 9.0)
 
 left_lane_x = -lane_width * 0.5
 right_lane_x = lane_width * 0.5
-lane_len = 800.0                        #visible lane lenght
+# lane_len = 800.0                        #visible lane length
 rail_height = 0.5
 lane_radius = 0.1                       #lane border radius
 lane_back_y = -20
@@ -347,7 +347,7 @@ class CogCarSim:
         for blob in self.blobs:
             y, x = self.gameGrid.toMatrixCoords(blob)
             self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
-            self.gameGrid.setAdjacentScore(y, x, adjacent_score) # set score for the blob position adjacent tiles on the game grid
+            self.gameGrid.setAdjacentScore(y, x) # set score for the blob position adjacent tiles on the game grid
         # initialize start and end point on grid
         self.gameGrid.setTileScore(0, (lane_width//2+1)//2, start_score) # the car start position at the center of grid
         last_row = range(0, lane_width//2+1)
@@ -676,6 +676,7 @@ class CogCarSim:
             if task == auto_speed or task == agent_speed:
                 chosen_velocity = velocity # to be used in collision analyses
                 velocity += passed * nocollision_velocity_up
+                # velocity += nocollision_velocity_up
             elif task == manual_speed:
                 throttle_ratio = 1.0*(throttlepos - pedal_neutral) / (pedal_down - pedal_neutral)
                 velocity = sqrt((1.0-throttle_base)*velocity**2+2**throttle_multiply*throttle_base*throttle_ratio**throttle_power)

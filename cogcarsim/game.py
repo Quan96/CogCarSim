@@ -1,5 +1,8 @@
 import numpy as np
+import networkx as nx
 # from cogCarSim import wheel_sensitivity
+
+lane_len = 800       #visible lane length
 
 class Grid:
     def __init__(self, x_min=-13, y_min=0, x_max=13, y_max=24188, 
@@ -7,7 +10,7 @@ class Grid:
         self.height = int(size[0])
         self.width = int(size[1])
         self.path_score = path_score
-        self.blob_score = blob_score
+        # self.blob_score = blob_score
         self.adjacent_score = adjacent_score
         self.gameGrid = path_score * np.ones((self.height+1, self.width))
         self.x_min = x_min
@@ -17,6 +20,7 @@ class Grid:
         self.x_range = (0.0, float(self.width)-1)
         self.y_range = (0.0, float(self.height)-1)
         self._isGoal = False
+        # self.state = {}
         self.goal = (self.height-1, 6)
         
     def __len__(self):
@@ -37,15 +41,15 @@ class Grid:
     def setTileScore(self, y, x, score):
         self.gameGrid[y][x] = score
         
-    def setAdjacentScore(self, y, x, score):
+    def setAdjacentScore(self, y, x):
         if self.gameGrid[y+1][x] == self.path_score:
-            self.setTileScore(y+1, x, score)    # up
+            self.setTileScore(y+1, x, self.adjacent_score)    # up
         if self.gameGrid[y-1][x] == self.path_score:
-            self.setTileScore(y-1, x, score)    # down
+            self.setTileScore(y-1, x, self.adjacent_score)    # down
         if self.gameGrid[y][x+1] == self.path_score:
-            self.setTileScore(y, x+1, score)    # right
+            self.setTileScore(y, x+1, self.adjacent_score)    # right
         if self.gameGrid[y][x-1] == self.path_score:
-            self.setTileScore(y, x-1, score)    # left
+            self.setTileScore(y, x-1, self.adjacent_score)    # left
     
     def __getitem__(self, key):
         return self.gameGrid[key]
@@ -55,12 +59,23 @@ class Grid:
     
     def finished(self):
         self._isGoal = True
-        
+    
+    @staticmethod
     def slidingWindow(self, overlap):
-        windowSize = (self.height // 10, self.width-1)
+        # The visible lane length is 800
+        # we want the window length is equal to the perceived lane length
+        # so the window length will be lane_len/2
+        windowSize = (lane_len//2, self.width-1)
         step = int(windowSize[0]*overlap)
         for y in range(0, self.height, step):
             yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6))  # yield the sliding window and its goal
+
+    def available(self, move):
+        pass
+
+class Graph:
+    def __init__(self):
+        self.G = nx.DiGraph()
 
 class Actions:
     LEFT = "Left"
