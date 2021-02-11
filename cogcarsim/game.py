@@ -1,5 +1,4 @@
 import numpy as np
-import networkx as nx
 # from cogCarSim import wheel_sensitivity
 
 lane_len = 800       #visible lane length
@@ -61,22 +60,73 @@ class Grid:
         self._isGoal = True
     
     @staticmethod
-    def slidingWindow(self, overlap):
+    def slidingWindow(self, overlap, carPos, velocity):
         # The visible lane length is 800
         # we want the window length is equal to the perceived lane length
         # so the window length will be lane_len/2
         windowSize = (lane_len//2, self.width-1)
         step = int(windowSize[0]*overlap)
         for y in range(0, self.height, step):
-            yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6))  # yield the sliding window and its goal
+            
+            yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6), velocity)  # yield the sliding window and its goal
+            
+    def graph(self, carPos, velocity, max_depth):
+        # Make a graph on the go
+        for i in range(max_depth):
+            
 
-    def available(self, move):
+    @staticmethod
+    def available(self):
         pass
 
-class Graph:
-    def __init__(self):
-        self.G = nx.DiGraph()
+    def do_move():
+        pass
 
+class DiGraph:
+    class Node:
+        def __init__(self, data, weight=0):
+            self.data = data
+            self.weight = 0
+            self.links = []
+            self.parent = None
+            self.visited = False
+            
+        def getData(self):
+            return self.data
+        
+        def setWeight(self, score):
+            self.weight = score
+            
+        def isLeftNode(self):
+            if (self.parent.getX > self.x):
+                return True
+            else:
+                return False
+        
+        def isRightNode(self):
+            if (self.parent.getX < self.x):
+                return True
+            else:
+                return False
+        
+        def setParent(self, parent):
+            self.parent = parent
+            
+        def add_edge(self, other, weight):
+            self.links.append((other, weight))
+    
+    def __init__(self):
+        self.nodes = []
+        self.nodeCount = 0
+        
+    def newNode(self, data, weight):
+        node = self.Node(data, weight)
+        self.nodes.append(node)
+        self.nodeCount += 1
+        return node
+        
+        
+        
 class Actions:
     LEFT = "Left"
     RIGHT = "Right"

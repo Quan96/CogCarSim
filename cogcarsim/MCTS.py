@@ -5,10 +5,10 @@ from operator import itemgetter
 
 def rollout_policy_fn(game):
     """
-    a coarse , fast version of policy_fn used in the roolout phase
+    a coarse , fast version of policy_fn used in the rollout phase
     """
     action_probs = np.random.len(game.width)
-    return zip(game.getAvailableAction, action_probs)
+    return zip(game.available, action_probs)
 
 def policy_value_fn(game):
     """
@@ -16,7 +16,7 @@ def policy_value_fn(game):
     tuples and a score for the state
     """
     action_probs = np.one(len(game.width))/len(game.width)
-    return zip(game.getAvailableAction, action_probs), 0
+    return zip(game.available, action_probs), 0
     
 class TreeNode(object):
     """
@@ -186,7 +186,7 @@ class MCTSPlayer(object):
         self.mcts = MCTS(policy_value_fn, c_puct, n_playout)
         
     def get_action(self, game):
-        moves = game.getAvailableAction
+        moves = game.available
         if len(moves) > 0:
             move = self.mcts.get_move(game)
             self.mcts.update_with_move(-1)
