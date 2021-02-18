@@ -2,6 +2,7 @@ import numpy as np
 # from cogCarSim import wheel_sensitivity
 
 lane_len = 800       #visible lane length
+edge_weight = 1
 
 class Grid:
     def __init__(self, x_min=-13, y_min=0, x_max=13, y_max=24188, 
@@ -9,7 +10,7 @@ class Grid:
         self.height = int(size[0])
         self.width = int(size[1])
         self.path_score = path_score
-        # self.blob_score = blob_score
+        self.blob_score = blob_score
         self.adjacent_score = adjacent_score
         self.gameGrid = path_score * np.ones((self.height+1, self.width))
         self.x_min = x_min
@@ -67,12 +68,41 @@ class Grid:
         windowSize = (lane_len//2, self.width-1)
         step = int(windowSize[0]*overlap)
         for y in range(0, self.height, step):
-            
             yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6), velocity)  # yield the sliding window and its goal
             
     def graph(self, carPos, velocity, max_depth):
         # Make a graph on the go
-        for i in range(max_depth):
+        G = DiGraph()
+        root = G.newNode((carPos.x, carPos.y), 0)
+        parents = [root]
+        children = []
+        for i in range(1, max_depth):
+            y = carPos.y + 4*i
+            for x in range(carPos.x-i, carPos.x+i+1):
+                if (x < 0 or x > 12):
+                    continue
+                if (self.board[y][x] == self.blob_score):
+                    new_node = G.newNode((x, y), weight = self.blob_score)
+                else:
+                    new_node = G.newNode((x, y), weight = 0)
+                children.append(new_node)
+            for parent in parents:
+                for child in children:
+                    if (abs(child.data[0] - parent.data[0]) <= 1):
+                        if (child.isLeftNode(parent)):
+                            parent.addEdge(child, -edge_weight)
+                            child.setParent(parent, edge_weight)
+                        elif(child.isRightNode(parent)):
+                            parent.addEdge(child, edge_weight)
+                            child.setParent(parent, -edge_weight)
+                        else:
+                            parent.addEdge(child, 0)
+                            child.setParent(parent, 0)
+            parents = children   
+            children = []
+        return G
+                
+                    
             
 
     @staticmethod
@@ -83,13 +113,16 @@ class Grid:
         pass
 
 class DiGraph:
+    link_count = 0
     class Node:
         def __init__(self, data, weight=0):
             self.data = data
             self.weight = 0
             self.links = []
-            self.parent = None
+            self.pastLink = None
+            self.parents = []
             self.visited = False
+            
             
         def getData(self):
             return self.data
@@ -97,32 +130,33 @@ class DiGraph:
         def setWeight(self, score):
             self.weight = score
             
-        def isLeftNode(self):
-            if (self.parent.getX > self.x):
+        def isLeftNode(self, other):
+            if (other.data[0] > self.data[0]):
                 return True
             else:
                 return False
         
-        def isRightNode(self):
-            if (self.parent.getX < self.x):
+        def isRightNode(self, other):
+            if (other.data[0] < self.data[0]):
                 return True
             else:
                 return False
         
-        def setParent(self, parent):
-            self.parent = parent
+        def setParent(self, parent, weight):
+            self.parents.append((parent, weight))
             
-        def add_edge(self, other, weight):
+        def addEdge(self, other, weight):
             self.links.append((other, weight))
+            DiGraph.link_count += 1
     
     def __init__(self):
         self.nodes = []
-        self.nodeCount = 0
+        self.node_count = 0
         
     def newNode(self, data, weight):
         node = self.Node(data, weight)
         self.nodes.append(node)
-        self.nodeCount += 1
+        self.node_count += 1
         return node
         
         
