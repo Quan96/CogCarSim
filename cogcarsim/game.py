@@ -22,6 +22,8 @@ class Grid:
         self._isGoal = False
         # self.state = {}
         self.goal = (self.height-1, 6)
+        self.G = None
+        self.available = []
         
     def __len__(self):
         return len(self.gameGrid)
@@ -72,9 +74,10 @@ class Grid:
             
     def graph(self, carPos, velocity, max_depth):
         # Make a graph on the go
-        G = DiGraph()
-        root = G.newNode((carPos.x, carPos.y), 0)
+        self.G = DiGraph()
+        root = self.G.newNode((carPos.x, carPos.y), 0)
         parents = [root]
+        self.available = []
         children = []
         for i in range(1, max_depth):
             y = carPos.y + 4*i
@@ -82,9 +85,9 @@ class Grid:
                 if (x < 0 or x > 12):
                     continue
                 if (self.board[y][x] == self.blob_score):
-                    new_node = G.newNode((x, y), weight = self.blob_score)
+                    new_node = self.G.newNode((x, y), weight = self.blob_score)
                 else:
-                    new_node = G.newNode((x, y), weight = 0)
+                    new_node = self.G.newNode((x, y), weight = 0)
                 children.append(new_node)
             for parent in parents:
                 for child in children:
@@ -100,16 +103,16 @@ class Grid:
                             child.setParent(parent, 0)
             parents = children   
             children = []
-        return G
-                
-                    
+        return self.G
+
+    @staticmethod
+    def getAvailable(self):
+        for node in self.G:
+            pass
             
 
     @staticmethod
-    def available(self):
-        pass
-
-    def do_move():
+    def do_move(action):
         pass
 
 class DiGraph:
@@ -122,8 +125,7 @@ class DiGraph:
             self.pastLink = None
             self.parents = []
             self.visited = False
-            
-            
+                      
         def getData(self):
             return self.data
         
