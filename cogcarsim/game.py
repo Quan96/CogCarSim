@@ -1,5 +1,6 @@
 import numpy as np
 # from cogCarSim import wheel_sensitivity
+import networkx as nx
 
 lane_len = 800       #visible lane length
 edge_weight = 1
@@ -72,7 +73,7 @@ class Grid:
         for y in range(0, self.height, step):
             yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6), velocity)  # yield the sliding window and its goal
             
-    def graph(self, carPos, velocity, max_depth):
+    def graph(self, carPos, max_depth, velocity=0):
         # Make a graph on the go
         self.G = DiGraph()
         root = self.G.newNode((carPos.x, carPos.y), 0)
@@ -84,7 +85,7 @@ class Grid:
             for x in range(carPos.x-i, carPos.x+i+1):
                 if (x < 0 or x > 12):
                     continue
-                if (self.board[y][x] == self.blob_score):
+                if (self.gameGrid[y][x] == self.blob_score):
                     new_node = self.G.newNode((x, y), weight = self.blob_score)
                 else:
                     new_node = self.G.newNode((x, y), weight = 0)
