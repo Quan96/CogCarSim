@@ -104,7 +104,7 @@ class MCTS(object):
         :param policy_value_fn: a function that takes in game state 
             and output a list of (action, probability) tuples and alse a score in [-1, 1]
         :param c_puct: a number in (0, inf) that controls 
-            how quickly exploration converges tot the maximum-value policy.
+            how quickly exploration converges to the maximum-value policy.
             A higher value means relying on the prior more.
             defaults to 5
         :type c_puct: int, optional

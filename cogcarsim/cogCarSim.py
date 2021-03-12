@@ -80,8 +80,8 @@ throttle_multiply = 4
 throttle_power = 5
 
 
-collision_velocity_down = 0.102
-nocollision_velocity_up = 0.0012
+# collision_velocity_down = 0.102
+# nocollision_velocity_up = 0.0012
 
 max_name_len = 20
 
