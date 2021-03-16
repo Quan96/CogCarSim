@@ -116,6 +116,7 @@ class GameGraph():
         self.blob_score = blob_score
         self.G = nx.DiGraph()
         self.id = 0
+        self.curID = 0
         self.available = []
 
     def expand(self, root_id, carPos, max_depth, velocity):
@@ -177,18 +178,40 @@ class GameGraph():
             self.G.nodes[id]['parents'].append(parent_id)
         else:
             print("Parents limitation is 3")
+    
+    def updateCurrentNode(self, node_id):
+        self.curID = node_id
 
     @staticmethod
-    def getAvailable(self, node_id):
-        for adj_id, _ in self.G.adj[node_id].items():
+    def getAvailable(self):
+        self.available = []
+        for adj_id, _ in self.G.adj[self.curId].items():
             self.available.append(adj_id)
         return self.available
 
     @staticmethod
-    def do_move(action):
-        pass
-            
-
+    def do_move(self, action):
+        if len(self.available) == 3:
+            if action == Actions.LEFT:
+                self.updateCurrentNode(self.available[0])
+            if action == Actions.STRAIGHT:
+                self.updateCurrentNode(self.available[1])
+            if action == Actions.RIGHT:
+                self.updateCurrentNode(self.available[2])
+        if len(self.available) != 3:
+            if action == Actions.STRAIGHT:
+                if (self.G.nodes[self.curId]['location'][0] == self.G.nodes[self.available[0]]['location'][0]):
+                    self.updateCurrentNode(self.available[0])
+                else:
+                    self.updateCurrentNode(self.available[1])
+            if action == Actions.LEFT:
+                if (self.G.nodes[self.curId]['location'][0] - 1 == self.G.nodes[self.available[0]]['location'][0]):
+                    self.updateCurrentNode(self.available[0])
+            if action == Actions.RIGHT:
+                if (self.G.nodes[self.curId]['location'][0] + 1 == self.G.nodes[self.available[0]]['location'][1]):
+                    self.updateCurrentNode(self.available[1])
+     
+     
 # class DiGraph:
 #     link_count = 0
 #     class Node:
