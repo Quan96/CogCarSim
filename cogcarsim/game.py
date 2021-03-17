@@ -26,7 +26,6 @@ class Grid:
         self._isGoal = False
         # self.state = {}
         self.goal = (self.height-1, 6)
-        self.G = None
         self.available = []
         
     def __len__(self):
@@ -115,8 +114,8 @@ class GameGraph():
         # self.velocity = velocity
         self.blob_score = blob_score
         self.G = nx.DiGraph()
-        self.id = 0
-        self.curID = 0
+        self.id = 0     # store the last id in the graph
+        self.curID = 0  # store the current id (position of car) in the graph
         self.available = []
 
     def expand(self, root_id, carPos, max_depth, velocity):
@@ -172,6 +171,9 @@ class GameGraph():
     
     def setScore(self, id, score):
         self.G.nodes[id]['weight'] = score
+        
+    def getNodeInfo(self, id):
+        return self.G.nodes[id]
         
     def setParent(self, id, parent_id):
         if (len(self.G.nodes[id]['parent']) < 3):
