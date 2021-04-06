@@ -4,7 +4,7 @@ from __future__ import print_function
 from visual import *
 display.enable_shaders = False
 import time
-import datetime
+# import datetime
 import random
 import json
 import os
@@ -12,6 +12,7 @@ import errno
 import wheel
 import sys
 import csv
+from math import ceil
 
 
 from blobEntry import *
@@ -19,12 +20,13 @@ from speedGate import *
 from pathEntry import *
 from game import *
 from search import *
+from mcts import MCTSPlayer
 
 refresh_rate = 60
 default_start_velocity = 1.6
 
 # Prop constants
-distance_to_first_blob = 200
+distance_to_first_blob = 180
 number_of_blobs = 2000
 blob_y_distance = 12.0
 blobs_per_patch = 100
@@ -332,7 +334,7 @@ class CogCarSim:
         
         return car, left_lane, right_lane
     
-    def create_grid(self, path_score=0.0, blob_score=1.0, adjacent_score=0.0, start_score=5.0, goal_score=100.0):
+    def create_grid(self, path_score=0.0, blob_score=10.0, adjacent_score=0.0, start_score=5.0, goal_score=100.0):
         """
         Create the matrix of the game to represent state space
 
@@ -342,17 +344,23 @@ class CogCarSim:
         :type adjacent_score: int, optional
         """
         last_y = self.blobs[-1].y + 2 * safe_back_y
-        self.gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], 
+        gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], 
                              path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score)
         for blob in self.blobs:
-            y, x = self.gameGrid.toMatrixCoords(blob)
-            self.gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
-            self.gameGrid.setAdjacentScore(y, x) # set score for the blob position adjacent tiles on the game grid
+            y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
+                                           gameGrid.x_min, gameGrid.x_max, 
+                                           gameGrid.y_min, gameGrid.y_max, blob)
+            gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
+            gameGrid.setAdjacentScore(y, x) # set score for the blob position adjacent tiles on the game grid
         # initialize start and end point on grid
-        self.gameGrid.setTileScore(0, (lane_width//2+1)//2, start_score) # the car start position at the center of grid
+        gameGrid.setTileScore(0, (lane_width//2+1)//2, start_score) # the car start position at the center of grid
         last_row = range(0, lane_width//2+1)
-        self.gameGrid.setTileScore(-1, last_row, goal_score) # every tile of the last row can be considered as goal
-            
+        gameGrid.setTileScore(-1, last_row, goal_score) # every tile of the last row can be considered as goal
+        return gameGrid
+        
+    def create_graph(self, blob_score=10):
+        gameGraph = GameGraph(blob_score)
+        return gameGraph
 
     def autopilot(self, xcar, ycar, velocity):
         """
@@ -455,21 +463,21 @@ class CogCarSim:
                 del self.gates[0]
         return velocity
     
-    def gridToLogFile(self, file_name, path_score, blob_score, adjacent_score, collision_score, car_score):
-            path = 'logs/'
-            with open(path+file_name, 'a') as f:
-                f.writelines("%s" %datetime.datetime.now())
-                line='\n'
-                for i in range(self.gameGrid.height):
+    def gridToLogFile(self, gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score):
+            now = datetime.datetime.now()
+            dt_string = now.strftime("%d-%m-%Y-%H-%M-%S")
+            file = 'logs/' + 'run' + dt_string + '.txt'
+            with open(file, 'w') as f:
+                for i in range(gameGrid.height):
                     line+='|'
-                    for j in range(self.gameGrid.width):
-                        if self.gameGrid[i][j] == path_score or self.gameGrid[i][j] == adjacent_score:
+                    for j in range(gameGrid.width):
+                        if gameGrid[i][j] == path_score or gameGrid[i][j] == adjacent_score:
                             line+=' '
-                        elif self.gameGrid[i][j] == blob_score:
+                        elif gameGrid[i][j] == blob_score:
                             line+='b'
-                        elif self.gameGrid[i][j] == collision_score:
+                        elif gameGrid[i][j] == collision_score:
                             line+='x'
-                        elif self.gameGrid[i][j] == car_score:
+                        elif gameGrid[i][j] == car_score:
                             line+='c'
                     line+='|\n'
                 f.writelines(line)
@@ -573,12 +581,14 @@ class CogCarSim:
         velocity = start_velocity
         
         path = []
+        actions = []
         step = 0
         max_velocity = velocity
         last_y = self.blobs[-1].y + 2 * safe_back_y
         carPos = car.getPosition()
         
         # set different score for different problem
+        actions_list = [Actions.LEFT, Actions.STRAIGHT, Actions.RIGHT]
         path_score = 1.0
         adjacent_score = -2.0
         start_score = 5.0
@@ -586,33 +596,45 @@ class CogCarSim:
         car_score = -5.0
         goal_score = -100.0
         collision_score = -1.0
-        self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
+        max_depth = 3
+        gameGrid = self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
                          start_score=start_score, goal_score=goal_score)
+        
+        gameGraph = self.create_graph(blob_score=10)
+        y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
+                              gameGrid.x_min, gameGrid.x_max, 
+                              gameGrid.y_min, gameGrid.y_max, carPos)
+        gameGraph.expand(0, y, x, max_depth, velocity, gameGrid)
+        
+        # memo = {}
         
         #input handling
         # print(actions)
         if task == agent_speed:
-            reinforce = True
-            windows = self.gameGrid.slidingWindow(0.5)     # 50% overlap
-            problem = ShortestPathProblem(grid=self.gameGrid, costFn=self.gameGrid.__getitem__)
-            actions, locations = aStarSearch(problem, manhattanHeuristic)
-            # for (window, window_goal) in windows:
-                # pass
-                # problem = ShortestPathProblem(grid=window, costFn=window.__getitem__)
-                # actions, locations = aStarSearch(problem, manhattanHeuristic)
+            # reinforce = True
+            # windows = gameGrid.slidingWindow(0.5)     # 50% overlap
+            # problem = ShortestPathProblem(grid=gameGrid, costFn=gameGrid.__getitem__)
+            # actions, locations = aStarSearch(problem, manhattanHeuristic)
+            # # for (window, window_goal) in windows:
+            #     # pass
+            #     # problem = ShortestPathProblem(grid=window, costFn=window.__getitem__)
+            #     # actions, locations = aStarSearch(problem, manhattanHeuristic)
             
-            for location in locations:
-                y = location[0]
-                x = location[1]
-                if self.gameGrid[y][x] == path_score:
-                    self.gameGrid.setTileScore(y, x, car_score)
-                if self.gameGrid[y][x] == adjacent_score:
-                    self.gameGrid.setTileScore(y, x, car_score)
-                if self.gameGrid[y][x] == blob_score:
-                    self.gameGrid.setTileScore(y, x, collision_score)
+            # for location in locations:
+            #     y = location[0]
+            #     x = location[1]
+            #     if gameGrid[y][x] == path_score:
+            #         gameGrid.setTileScore(y, x, car_score)
+            #     if gameGrid[y][x] == adjacent_score:
+            #         gameGrid.setTileScore(y, x, car_score)
+            #     if self.gameGrid[y][x] == blob_score:
+            #         gameGrid.setTileScore(y, x, collision_score)
                 
-            self.gridToLogFile('main.txt', path_score, blob_score, adjacent_score, collision_score, car_score)
-        
+            # self.gridToLogFile(gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score)
+            reinforce = True
+            MCTS_player = MCTSPlayer()
+            # getLastestNodeInfo = gameGraph.getNodeInfo(gameGraph.id)            
+            
         while carPos.y < last_y:
             if not batch:
                 rate(display_rate)
@@ -660,7 +682,35 @@ class CogCarSim:
                 wheelpos = wheel_positions[step]
                 throttlepos = throttle_positions[step]
             elif reinforce:
-                wheelpos = Actions.directionToWheel(actions[step])
+                y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
+                                              gameGrid.x_min, gameGrid.x_max, 
+                                              gameGrid.y_min, gameGrid.y_max, carPos)
+                gameGraph.getAvailable()
+                print(gameGraph.available)
+                if len(gameGraph.available) == 0:
+                    if int(floor((gameGrid.y_max - y) / 4)) >= max_depth:
+                        gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)     
+                        gameGraph.getAvailable()
+                        # for id in gameGraph.available:
+                            # y, x = gameGraph.getNodeGridPosition(id)
+                            # if gameGrid[y][x] == blob_score:
+                            #     gameGraph.setNodeWeight(id, blob_score)
+                            # node_info = gameGraph.getNodeInfo(id)
+                            # print(1)
+                            # set blob score in Graph
+                            # try look-up table approach
+                            # self.getNodeGridPosition(nodeID)
+                        # print(1)
+                    else:
+                        max_depth = (last_y - carPos.y) // 4
+                        gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)
+                        # print(2)
+                
+                action = MCTS_player.get_action(gameGraph)
+                print(action)
+                gameGraph.doMove(action)
+                wheelpos = Actions.directionToWheel(action)
+                # wheelpos = 0
                 throttlepos = 1000.0
             else:
                 (w, t, b, c) = wheel.getprecise()
@@ -717,11 +767,13 @@ class CogCarSim:
             
             # Collision detection and handing
             
-            car_y, car_x = self.gameGrid.toMatrixCoords(carPos)            
+            car_y, car_x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
+                                                   gameGrid.x_min, gameGrid.x_max, 
+                                                   gameGrid.y_min, gameGrid.y_max, carPos)            
             collision, collided_color = self.check_collision(carPos.x, carPos.y, step)
             # velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity)
             if (collision):
-                score -= self.gameGrid[car_y][car_x]
+                score -= gameGrid[car_y][car_x]
                 collision_count = collision_count + 1
                 if task == auto_speed or task == fixed_speed or task == agent_speed:
                     self.scene.background = (0.5, 0.5, 0.5)
@@ -759,6 +811,8 @@ class CogCarSim:
             
         # After while loop
         
+        # for action in actions:
+        #     print(action)
         clock_diff = path[-1].clock_begin - path[0].clock_begin
         step_diff = path[-1].step - path[0].step
         print("Time:", clock_diff)

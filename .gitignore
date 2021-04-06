@@ -4,4 +4,4 @@
 *.7z
 *.db
 *.pyc
-logs/*
+cogcarsim/logs/*
