@@ -3,9 +3,11 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import datetime
+import math
 
 lane_len = 800       #visible lane length
-edge_weight = 1
+edge_weight = 3
+leap = 3
 
 collision_velocity_down = 0.102
 nocollision_velocity_up = 0.0012
@@ -64,39 +66,6 @@ class Grid:
         step = int(windowSize[0]*overlap)
         for y in range(0, self.height, step):
             yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6), velocity)  # yield the sliding window and its goal
-            
-    # def graph(self, carPos, max_depth, velocity=0):
-    #     # Make a graph on the go
-    #     self.G = nx.DiGraph()
-    #     root = self.G.newNode((carPos.x, carPos.y), 0)
-    #     parents = [root]
-    #     self.available = []
-    #     children = []
-    #     for i in range(1, max_depth):
-    #         y = carPos.y + 4*i
-    #         for x in range(carPos.x-i, carPos.x+i+1):
-    #             if (x < 0 or x > 12):
-    #                 continue
-    #             if (self.gameGrid[y][x] == self.blob_score):
-    #                 new_node = self.G.newNode((x, y), weight = self.blob_score)
-    #             else:
-    #                 new_node = self.G.newNode((x, y), weight = 0)
-    #             children.append(new_node)
-    #         for parent in parents:
-    #             for child in children:
-    #                 if (abs(child.data[0] - parent.data[0]) <= 1):
-    #                     if (child.isLeftNode(parent)):
-    #                         parent.addEdge(child, -edge_weight)
-    #                         child.setParent(parent, edge_weight)
-    #                     elif(child.isRightNode(parent)):
-    #                         parent.addEdge(child, edge_weight)
-    #                         child.setParent(parent, -edge_weight)
-    #                     else:
-    #                         parent.addEdge(child, 0)
-    #                         child.setParent(parent, 0)
-    #         parents = children   
-    #         children = []
-    #     return self.G
 
 def toMatrixCoords(x_range, y_range, x_min, x_max, y_min, y_max, obj):
     x_obj = obj.x
@@ -113,56 +82,59 @@ def toGameCoords(x_range, y_range, x_min, x_max, y_min, y_max, y, x):
 class GameGraph():
     def __init__(self, blob_score):
         # self.max_depth = max_depth
-        # self.velocity = velocity
+        self.velocity = 1.6
         self.blob_score = blob_score
-        self.score = 0
+        # self.score = 0
+        # self.past_score = 0
         self.G = nx.DiGraph()
         self.id = 0     # store the last id in the graph
         self.curID = 0  # store the current id (position of car) in the graph
         self.available = []
-        self.finished = False
+        # self.finished = False
 
     def expand(self, root_id, y, x, max_depth, velocity, grid):
         # add the root node
+        self.velocity = velocity
         self.updateCurrentNode(root_id)
         parent_ids = []
         children_ids = []
         if (root_id not in self.G.nodes()):
-            self.G.add_nodes_from([(root_id, {'weight': 0, 'parents': [], 'location': (y, x), 'velocity': velocity})])
+            self.G.add_nodes_from([(root_id, {'weight': 0, 'location': (y, x), 'velocity': velocity, 'finished': False})])
         self.id += 1
         
         # compute the second layer of nodes
         if (x - 1 >= 0):
-            self.G.add_nodes_from([(self.id, {'weight': 0, 'parents': [root_id], 'location': (y+4, x - 1), 'velocity': velocity})])
+            self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x-1), 'velocity': velocity, 'finished': False})])
             self.G.add_weighted_edges_from([(root_id, self.id, -edge_weight)])
-            if grid[y][x] == grid.blob_score:
-                self.setNodeWeight(self.id, self.blob_score)
+            if grid[y+leap][x-1] == grid.blob_score:
+                self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
             parent_ids.append(self.id)
-            self.id += 1
-        self.G.add_nodes_from([(self.id, {'weight': 0, 'parents': [root_id], 'location': (y+4, x), 'velocity': velocity})])
+        self.id += 1
+        self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x), 'velocity': velocity, 'finished': False})])
         self.G.add_weighted_edges_from([(root_id, self.id, 0)])
-        if grid[y][x] == grid.blob_score:
-                self.setNodeWeight(self.id, self.blob_score)
+        if grid[y+leap][x] == grid.blob_score:
+                self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
         parent_ids.append(self.id)
         self.id += 1
-        if (x + 1 < 12):
-            self.G.add_nodes_from([(self.id, {'weight': 0, 'parents': [root_id], 'location': (y+4, x + 1), 'velocity': velocity})])
+        if (x + 1 <= 12):
+            self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x+1), 'velocity': velocity, 'finished': False})])
             self.G.add_weighted_edges_from([(root_id, self.id, edge_weight)])
-            if grid[y][x] == grid.blob_score:
-                self.setNodeWeight(self.id, self.blob_score)
+            if grid[y+leap][x+1] == grid.blob_score:
+                self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
             parent_ids.append(self.id)
-            self.id += 1
+        self.id += 1
         
+        # compute the rest
         for i in range(2, max_depth):
-            y = y + 3*i
-            for x in range(x-i, x+i+1):
-                if (x < 0 or x > 12):
+            y_temp = y + leap*i
+            for x_temp in range(x-i, x+i+1):
+                if (x_temp < 0 or x_temp > 12):
                     self.id += 1
                     continue
-                self.G.add_nodes_from([(self.id, {'weight': 0, 'parents': [], 'location': (y, x), 'velocity': velocity})])
+                self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y_temp, x_temp), 'velocity': velocity, 'finished': False})])
                 children_ids.append(self.id)
-                if grid[y][x] == grid.blob_score:
-                    self.setNodeWeight(self.id, self.blob_score)
+                if grid[y_temp][x_temp] == grid.blob_score:
+                    self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
                 self.id += 1
             step = 2*(i-1) + 1
             for parent_id in parent_ids:
@@ -173,63 +145,68 @@ class GameGraph():
                 right_child = parent_id + step + 2
                 if (left_child in children_ids):
                     self.G.add_weighted_edges_from([(parent_id, left_child, -edge_weight)])
-                    self.setParent(left_child, parent_id)
                 if (mid_child in children_ids):
-                    self.G.add_weighted_edges_from([(parent_id, mid_child, 0)])
-                    self.setParent(mid_child, parent_id)
+                    self.G.add_weighted_edges_from([(parent_id, mid_child, 15)])
                 if (right_child in children_ids):
                     self.G.add_weighted_edges_from([(parent_id, right_child, edge_weight)])
-                    self.setParent(right_child, parent_id)
             parent_ids = children_ids
             children_ids = []
     
+    def gameEvaluation(self, id):
+        score = self.getNodeWeight(id) + self.getEdgeWeight(id)
+        return score
+    
     def setNodeWeight(self, id, score):
         self.G.nodes[id]['weight'] = score
+        
+    def getNodeWeight(self, id):
+        return self.G.nodes[id]['weight']
         
     def setScore(self, score):
         self.score = score
         
     def getScore(self):
         return self.score
+    
+    def getEdgeWeight(self, id):
+        return self.G.in_degree(id, weight='weight')
         
     def getNodeInfo(self, id):
         return self.G.nodes[id]
-        
-    def setParent(self, id, parent_id):
-        if (len(self.G.nodes[id]['parents']) < 3):
-            self.G.nodes[id]['parents'].append(parent_id)
-        else:
-            print("Parents limitation is 3")
+    
+    def getParent(self, id):
+        return self.G.predecessors(id)
     
     def updateCurrentNode(self, node_id):
         self.curID = node_id
         
-    def isFinish(self):
-        return self.finished
+    def finished(self, id):
+        self.G.nodes[id]['finished'] = True
+    
+    def isFinish(self, id):
+        return self.G.nodes[id]['finished']
     
     def getNodeGridPosition(self, id):
         y, x = self.G.nodes[id]['location']
         return y, x
 
-    def getAvailable(self):
-        self.available = []
-        for adj_id, _ in self.G.adj[self.curID].items():
-            self.available.append(adj_id)
-        return self.available.sort()
+    def getAvailable(self, id):
+        self.available = sorted(list(self.G.successors(id)))
+        return self.available
 
-    def doMove(self, action):
+    def doMove(self, action, id):
         action = Actions.reverseDirection(action)
-        self.getAvailable()
-        if len(self.available) == 0:
-            return
-        elif len(self.available) == 3:
+        posible_actions = self.getPosibleActions(id)
+        if len(posible_actions) == 0:
+            return 0
+        if len(posible_actions) == 3:
             if action == Actions.LEFT:
                 self.updateCurrentNode(self.available[0])
             if action == Actions.STRAIGHT:
                 self.updateCurrentNode(self.available[1])
             if action == Actions.RIGHT:
                 self.updateCurrentNode(self.available[2])
-        else:
+        elif len(posible_actions) == 2:
             if action == Actions.STRAIGHT:
                 if (self.G.nodes[self.curID]['location'][1] == self.G.nodes[self.available[0]]['location'][1]):
                     self.updateCurrentNode(self.available[0])
@@ -241,10 +218,11 @@ class GameGraph():
             if action == Actions.RIGHT:
                 if (self.G.nodes[self.curID]['location'][1] + 1 == self.G.nodes[self.available[1]]['location'][1]):
                     self.updateCurrentNode(self.available[1])
+        return self.curID
     
-    def getPosibleActions(self):
+    def getPosibleActions(self, id):
         # posibleActions = []
-        self.getAvailable()
+        self.getAvailable(id)
         if len(self.available) == 0:
             return []
         elif len(self.available) == 3:
@@ -263,54 +241,6 @@ class GameGraph():
         dt_string = now.strftime("%d-%m-%Y-%H-%M-%S")        
         plt.savefig("logs/graph{date}.png".format(date=dt_string))
      
-     
-# class DiGraph:
-#     link_count = 0
-#     class Node:
-#         def __init__(self, data, weight=0):
-#             self.data = data
-#             self.weight = 0
-#             self.links = []
-#             self.pastLink = None
-#             self.parents = []
-#             self.visited = False
-                      
-#         def getData(self):
-#             return self.data
-        
-#         def setWeight(self, score):
-#             self.weight = score
-            
-#         def isLeftNode(self, other):
-#             if (other.data[0] > self.data[0]):
-#                 return True
-#             else:
-#                 return False
-        
-#         def isRightNode(self, other):
-#             if (other.data[0] < self.data[0]):
-#                 return True
-#             else:
-#                 return False
-        
-#         def setParent(self, parent, weight):
-#             self.parents.append((parent, weight))
-            
-#         def addEdge(self, other, weight):
-#             self.links.append((other, weight))
-#             DiGraph.link_count += 1
-    
-#     def __init__(self):
-#         self.nodes = []
-#         self.node_count = 0
-        
-#     def newNode(self, data, weight):
-#         node = self.Node(data, weight)
-#         self.nodes.append(node)
-#         self.node_count += 1
-#         return node
-        
-        
         
 class Actions:
     LEFT = "Left"
@@ -335,5 +265,5 @@ class Actions:
     
     def directionToWheel(direction):
         action = Actions._directions[direction]
-        return action * 400
+        return action * 500
     directionToWheel = staticmethod(directionToWheel)

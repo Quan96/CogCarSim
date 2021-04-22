@@ -12,7 +12,7 @@ import errno
 import wheel
 import sys
 import csv
-from math import ceil
+# from math import ceil
 
 
 from blobEntry import *
@@ -596,15 +596,12 @@ class CogCarSim:
         car_score = -5.0
         goal_score = -100.0
         collision_score = -1.0
-        max_depth = 3
         gameGrid = self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
                          start_score=start_score, goal_score=goal_score)
-        
-        gameGraph = self.create_graph(blob_score=10)
-        y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
-                              gameGrid.x_min, gameGrid.x_max, 
-                              gameGrid.y_min, gameGrid.y_max, carPos)
-        gameGraph.expand(0, y, x, max_depth, velocity, gameGrid)
+        max_depth = 7
+        # print(max_depth)
+        gameGraph = self.create_graph(blob_score=-10)
+        gameGraph.expand(0, 0, 6, max_depth, velocity, gameGrid)
         
         # memo = {}
         
@@ -633,8 +630,7 @@ class CogCarSim:
             # self.gridToLogFile(gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score)
             reinforce = True
             MCTS_player = MCTSPlayer()
-            # getLastestNodeInfo = gameGraph.getNodeInfo(gameGraph.id)            
-            
+                        
         while carPos.y < last_y:
             if not batch:
                 rate(display_rate)
@@ -685,33 +681,26 @@ class CogCarSim:
                 y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
                                               gameGrid.x_min, gameGrid.x_max, 
                                               gameGrid.y_min, gameGrid.y_max, carPos)
-                gameGraph.getAvailable()
-                print(gameGraph.available)
+                gameGraph.getAvailable(gameGraph.curID)
+                # print(gameGraph.available)
+                # print(gameGraph.curID)
                 if len(gameGraph.available) == 0:
-                    if int(floor((gameGrid.y_max - y) / 4)) >= max_depth:
+                    if (gameGrid.height == y):
+                        gameGraph.finished(gameGraph.curID)
+                    elif int((gameGrid.height - y) // leap) >= max_depth:
                         gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)     
-                        gameGraph.getAvailable()
-                        # for id in gameGraph.available:
-                            # y, x = gameGraph.getNodeGridPosition(id)
-                            # if gameGrid[y][x] == blob_score:
-                            #     gameGraph.setNodeWeight(id, blob_score)
-                            # node_info = gameGraph.getNodeInfo(id)
-                            # print(1)
-                            # set blob score in Graph
-                            # try look-up table approach
-                            # self.getNodeGridPosition(nodeID)
-                        # print(1)
+                        # gameGraph.getAvailable(gameGraph.curID)
                     else:
-                        max_depth = (last_y - carPos.y) // 4
+                        max_depth = int((gameGrid.height - y) // leap)
                         gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)
-                        # print(2)
+                    # gameGraph.finished()
                 
                 action = MCTS_player.get_action(gameGraph)
-                print(action)
-                gameGraph.doMove(action)
-                wheelpos = Actions.directionToWheel(action)
-                # wheelpos = 0
-                throttlepos = 1000.0
+                gameGraph.doMove(action, gameGraph.curID)
+                for _ in range(leap*2):
+                    wheelpos = Actions.directionToWheel(action)
+                    # print(action)
+                    throttlepos = 1000.0
             else:
                 (w, t, b, c) = wheel.getprecise()
                 wheelpos = w / 1000.0

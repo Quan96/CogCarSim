@@ -1,5 +1,6 @@
-import logging
-import copy
+# import logging
+# import copy
+from decimal import Decimal
 import numpy as np
 from operator import itemgetter
 from game import Actions
@@ -203,10 +204,10 @@ import math
 
 class Node(object):
     def __init__(self, state, parent, actionList, children, visited, score, action):
+        self.state = state
         self.parent = parent
         self.actionList = actionList
         self.children = children
-        self.state = state
         self.visited = visited
         self.score = score
         self.action = action
@@ -214,38 +215,43 @@ class Node(object):
 class MCTSPlayer(object):
     total = 0
     
-    def traverse(self, node):
+    def traverse(self, node, game):
         len_actionList = len(node.actionList)
+        if len_actionList == 0:
+            return
         r = random.randint(0, len_actionList - 1)
         random_choice = node.actionList[r]
         node.actionList.pop(r)
-        child_state = node.state.doMove(random_choice)
-        if child_state is None:
-            return None
-        if node.state.isFinish():
+        child_state = game.doMove(random_choice, node.state[0])
+        # child_state = game.getAvailable(node.state[0])
+        if game.isFinish(child_state):
             child_actionList = []
         else:
-            child_actionList = node.state.getPosibleActions()
+            child_actionList = game.getPosibleActions(game.curID)
         s = node.state
-        s.append(random_choice)
+        s.append(game.curID)
         # s.doMove(random_choice)
         child = Node(s, node, child_actionList, [], 1, 1, random_choice)
-        child.score = self.rollout(child, s)
+        child.score = self.rollout(child, child_state, game)
         
         self.update(child)
         node.children.append(child)
         return
     
-    def rollout(self, node, current_state):
-        # possible = node.actionList
+    def rollout(self, node, current_state, game):
+        possible = node.actionList
         # maximum_value = -1 * float('inf')
         for i in range(5):
-            available = current_state.getPosibleActions()
-            if available is None:
+            if len(possible) > 1:
+                current_state = game.doMove(possible[random.randint(0, len(possible)-1)], current_state)
+            # for state in states:
+            elif len(possible) == 1:
+                current_state = game.doMove(possible[0], current_state)
+            if current_state == 0 or game.isFinish(current_state):
                 return 0
             else:
-                # possible = current_state.getPosibleActions()
-                score = current_state.getScore()
+                possible = game.getPosibleActions(current_state)
+                score = game.gameEvaluation(current_state)
         return score
     
     def update(self, node):
@@ -256,11 +262,11 @@ class MCTSPlayer(object):
             self.total = node.visited
     
     def compare(self, node):
-        c = 1
+        c = 2
         max_value = -1 * float('inf')
         if len(node.children) > 0:
             for i in node.children:
-                val = (i.score / i.visited) + 1 * math.sqrt(2*math.log(self.total)/float(i.visited))
+                val = (i.score / i.visited) + c * math.sqrt(2*math.log(self.total)/i.visited)
                 if val > max_value:
                     max_value = val
                     selected_child = i
@@ -268,8 +274,8 @@ class MCTSPlayer(object):
         return None
     
     def get_action(self, state):
-        state_copy = copy.deepcopy(state)
-        node = Node(state_copy, None, state.getPosibleActions(), [], 0, 0, Actions.STRAIGHT)
+        # state_copy = copy.deepcopy(state)
+        node = Node([state.curID], None, state.getPosibleActions(state.curID), [], 0, 0, Actions.STRAIGHT)
         root = node
         flag = 0
         
@@ -279,16 +285,19 @@ class MCTSPlayer(object):
                 break
             if len(node.actionList) > 0:
                 while len(node.actionList) > 0:
-                    self.traverse(node)
-                    flag = 2
+                    self.traverse(node, state)
+                flag = 2
             else:
                 node = self.compare(node)
+                
             if flag == 2:
-                node = root
+                # node = root
                 flag = 0
+                break
+                
         max_value = 0
         for i in root.children:
-            if i.visited > max_value:
+            if i.visited >= max_value:
                 max_value = i.visited
         
         ans = []
@@ -300,5 +309,6 @@ class MCTSPlayer(object):
             return ans[random.randint(0, len(ans) - 1)]
         
         return Actions.STRAIGHT
+    
         
                 
