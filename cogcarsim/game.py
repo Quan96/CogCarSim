@@ -103,54 +103,55 @@ class GameGraph():
         self.id += 1
         
         # compute the second layer of nodes
-        if (x - 1 >= 0):
-            self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x-1), 'velocity': velocity, 'finished': False})])
-            self.G.add_weighted_edges_from([(root_id, self.id, -edge_weight)])
-            if grid[y+leap][x-1] == grid.blob_score:
-                self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-            parent_ids.append(self.id)
-        self.id += 1
-        self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x), 'velocity': velocity, 'finished': False})])
-        self.G.add_weighted_edges_from([(root_id, self.id, 0)])
-        if grid[y+leap][x] == grid.blob_score:
-                self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-        parent_ids.append(self.id)
-        self.id += 1
-        if (x + 1 <= 12):
-            self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x+1), 'velocity': velocity, 'finished': False})])
-            self.G.add_weighted_edges_from([(root_id, self.id, edge_weight)])
-            if grid[y+leap][x+1] == grid.blob_score:
-                self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-            parent_ids.append(self.id)
-        self.id += 1
-        
-        # compute the rest
-        for i in range(2, max_depth):
-            y_temp = y + leap*i
-            for x_temp in range(x-i, x+i+1):
-                if (x_temp < 0 or x_temp > 12):
-                    self.id += 1
-                    continue
-                self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y_temp, x_temp), 'velocity': velocity, 'finished': False})])
-                children_ids.append(self.id)
-                if grid[y_temp][x_temp] == grid.blob_score:
+        if max_depth >= 2:
+            if (x - 1 >= 0):
+                self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x-1), 'velocity': velocity, 'finished': False})])
+                self.G.add_weighted_edges_from([(root_id, self.id, -edge_weight)])
+                if grid[y+leap][x-1] == grid.blob_score:
                     self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-                self.id += 1
-            step = 2*(i-1) + 1
-            for parent_id in parent_ids:
-                # for child_id in children_ids:
-                # add edge for each parent with 3 other children
-                left_child = parent_id + step
-                mid_child = parent_id + step + 1
-                right_child = parent_id + step + 2
-                if (left_child in children_ids):
-                    self.G.add_weighted_edges_from([(parent_id, left_child, -edge_weight)])
-                if (mid_child in children_ids):
-                    self.G.add_weighted_edges_from([(parent_id, mid_child, 15)])
-                if (right_child in children_ids):
-                    self.G.add_weighted_edges_from([(parent_id, right_child, edge_weight)])
-            parent_ids = children_ids
-            children_ids = []
+                parent_ids.append(self.id)
+            self.id += 1
+            self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x), 'velocity': velocity, 'finished': False})])
+            self.G.add_weighted_edges_from([(root_id, self.id, 0)])
+            if grid[y+leap][x] == grid.blob_score:
+                    self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
+            parent_ids.append(self.id)
+            self.id += 1
+            if (x + 1 <= 12):
+                self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x+1), 'velocity': velocity, 'finished': False})])
+                self.G.add_weighted_edges_from([(root_id, self.id, edge_weight)])
+                if grid[y+leap][x+1] == grid.blob_score:
+                    self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
+                parent_ids.append(self.id)
+            self.id += 1
+            
+            # compute the rest
+            for i in range(2, max_depth):
+                y_temp = y + leap*i
+                for x_temp in range(x-i, x+i+1):
+                    if (x_temp < 0 or x_temp > 12):
+                        self.id += 1
+                        continue
+                    self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y_temp, x_temp), 'velocity': velocity, 'finished': False})])
+                    children_ids.append(self.id)
+                    if grid[y_temp][x_temp] == grid.blob_score:
+                        self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
+                    self.id += 1
+                step = 2*(i-1) + 1
+                for parent_id in parent_ids:
+                    # for child_id in children_ids:
+                    # add edge for each parent with 3 other children
+                    left_child = parent_id + step
+                    mid_child = parent_id + step + 1
+                    right_child = parent_id + step + 2
+                    if (left_child in children_ids):
+                        self.G.add_weighted_edges_from([(parent_id, left_child, -edge_weight)])
+                    if (mid_child in children_ids):
+                        self.G.add_weighted_edges_from([(parent_id, mid_child, 15)])
+                    if (right_child in children_ids):
+                        self.G.add_weighted_edges_from([(parent_id, right_child, edge_weight)])
+                parent_ids = children_ids
+                children_ids = []
     
     def gameEvaluation(self, id):
         score = self.getNodeWeight(id) + self.getEdgeWeight(id)

@@ -467,6 +467,7 @@ class CogCarSim:
             now = datetime.datetime.now()
             dt_string = now.strftime("%d-%m-%Y-%H-%M-%S")
             file = 'logs/' + 'run' + dt_string + '.txt'
+            line = ''
             with open(file, 'w') as f:
                 for i in range(gameGrid.height):
                     line+='|'
@@ -588,19 +589,19 @@ class CogCarSim:
         carPos = car.getPosition()
         
         # set different score for different problem
-        actions_list = [Actions.LEFT, Actions.STRAIGHT, Actions.RIGHT]
+        # actions_list = [Actions.LEFT, Actions.STRAIGHT, Actions.RIGHT]
         path_score = 1.0
         adjacent_score = -2.0
         start_score = 5.0
         blob_score = 10.0
-        car_score = -5.0
+        car_score = -50.0
         goal_score = -100.0
         collision_score = -1.0
         gameGrid = self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
                          start_score=start_score, goal_score=goal_score)
         max_depth = 7
         # print(max_depth)
-        gameGraph = self.create_graph(blob_score=-10)
+        gameGraph = self.create_graph(blob_score=-20)
         gameGraph.expand(0, 0, 6, max_depth, velocity, gameGrid)
         
         # memo = {}
@@ -681,6 +682,13 @@ class CogCarSim:
                 y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
                                               gameGrid.x_min, gameGrid.x_max, 
                                               gameGrid.y_min, gameGrid.y_max, carPos)
+                if gameGrid[y][x] == path_score:
+                    gameGrid.setTileScore(y, x, car_score)
+                if gameGrid[y][x] == adjacent_score:
+                    gameGrid.setTileScore(y, x, car_score)
+                if gameGrid[y][x] == blob_score:
+                    gameGrid.setTileScore(y, x, collision_score)
+                
                 gameGraph.getAvailable(gameGraph.curID)
                 # print(gameGraph.available)
                 # print(gameGraph.curID)
@@ -696,6 +704,7 @@ class CogCarSim:
                     # gameGraph.finished()
                 
                 action = MCTS_player.get_action(gameGraph)
+                # print(action)
                 gameGraph.doMove(action, gameGraph.curID)
                 for _ in range(leap*2):
                     wheelpos = Actions.directionToWheel(action)
@@ -800,8 +809,7 @@ class CogCarSim:
             
         # After while loop
         
-        # for action in actions:
-        #     print(action)
+        self.gridToLogFile(gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score)
         clock_diff = path[-1].clock_begin - path[0].clock_begin
         step_diff = path[-1].step - path[0].step
         print("Time:", clock_diff)
