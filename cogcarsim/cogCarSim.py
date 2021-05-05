@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
+from networkx.readwrite.graphml import GraphMLWriter
 from visual import *
 display.enable_shaders = False
 import time
@@ -631,6 +632,7 @@ class CogCarSim:
             # self.gridToLogFile(gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score)
             reinforce = True
             MCTS_player = MCTSPlayer()
+            MCTS_player.registerInitialState()
                         
         while carPos.y < last_y:
             if not batch:
@@ -690,8 +692,6 @@ class CogCarSim:
                     gameGrid.setTileScore(y, x, collision_score)
                 
                 gameGraph.getAvailable(gameGraph.curID)
-                # print(gameGraph.available)
-                # print(gameGraph.curID)
                 if len(gameGraph.available) == 0:
                     if (gameGrid.height == y):
                         gameGraph.finished(gameGraph.curID)
@@ -701,15 +701,24 @@ class CogCarSim:
                     else:
                         max_depth = int((gameGrid.height - y) // leap)
                         gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)
-                    # gameGraph.finished()
+                        # gameGraph.finished()
                 
                 action = MCTS_player.get_action(gameGraph)
                 # print(action)
                 gameGraph.doMove(action, gameGraph.curID)
-                for _ in range(leap*2):
-                    wheelpos = Actions.directionToWheel(action)
-                    # print(action)
-                    throttlepos = 1000.0
+                cur_y, cur_x = gameGraph.getNodeGridPosition(gameGraph.curID)
+                y_dest, x_dest = toGameCoords(gameGrid.x_range, gameGrid.y_range,
+                                              gameGrid.x_min, gameGrid.x_max, 
+                                              gameGrid.y_min, gameGrid.y_max, cur_y, cur_x)
+                # theta = math.atan((x_dest - carPos.x)/(y_dest - carPos.y))
+                duration = int(math.ceil((y_dest - carPos.y))/velocity)
+                print(gameGraph.getNodeInfo(gameGraph.curID))
+                if duration != 0:
+                    theta = math.atan((x_dest - carPos.x)/duration)
+                    for _ in range(duration):
+                        wheelpos = Actions.radianToWheel(theta)
+                        # print(wheelpos)
+                        throttlepos = 1000.0
             else:
                 (w, t, b, c) = wheel.getprecise()
                 wheelpos = w / 1000.0

@@ -5,9 +5,9 @@ gameGraph = GameGraph(blob_score=10)
 grid = Grid(-13, 0, 13, 100, [1000, 13], 0, 0, 0)
 gameGraph.expand(root_id=0, y=0, x=0, max_depth=20, velocity=1.6, grid=grid)
 while True:
-    gameGraph.getAvailable()
-    print(gameGraph.available)
-    gameGraph.doMove(Actions.STRAIGHT)
+    gameGraph.getAvailable(gameGraph.curID)
+    print(len(gameGraph.available))
+    gameGraph.doMove(Actions.STRAIGHT, gameGraph.curID)
     if len(gameGraph.available) == 0:
         # # print(gameGraph.curID)
         # # print(gameGraph.getNodeInfo(gameGraph.curID))
