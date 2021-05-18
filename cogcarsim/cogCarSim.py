@@ -345,8 +345,8 @@ class CogCarSim:
         :type adjacent_score: int, optional
         """
         last_y = self.blobs[-1].y + 2 * safe_back_y
-        gameGrid = Grid(x_max=lane_width//2+1, y_max=last_y, size=[last_y//2+1, lane_width//2+1], 
-                             path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score)
+        gameGrid = Grid(y_max=last_y, path_score=path_score, 
+                        blob_score=blob_score, adjacent_score=adjacent_score)
         for blob in self.blobs:
             y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
                                            gameGrid.x_min, gameGrid.x_max, 
@@ -705,14 +705,14 @@ class CogCarSim:
                 
                 action = MCTS_player.get_action(gameGraph)
                 # print(action)
-                gameGraph.doMove(action, gameGraph.curID)
+                gameGraph.doMove(action)
                 cur_y, cur_x = gameGraph.getNodeGridPosition(gameGraph.curID)
                 y_dest, x_dest = toGameCoords(gameGrid.x_range, gameGrid.y_range,
                                               gameGrid.x_min, gameGrid.x_max, 
                                               gameGrid.y_min, gameGrid.y_max, cur_y, cur_x)
                 # theta = math.atan((x_dest - carPos.x)/(y_dest - carPos.y))
                 duration = int(math.ceil((y_dest - carPos.y))/velocity)
-                print(gameGraph.getNodeInfo(gameGraph.curID))
+                # print(gameGraph.getNodeInfo(gameGraph.curID))
                 if duration != 0:
                     theta = math.atan((x_dest - carPos.x)/duration)
                     for _ in range(duration):

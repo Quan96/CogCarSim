@@ -6,7 +6,7 @@ from blobEntry import BlobEntry
 lane_width = 25
 left_lane_x = -lane_width * 0.5
 
-class SpeedGate():
+class SpeedGate:
         
     def __init__(self, x, y, velocity):
         self.x = x
