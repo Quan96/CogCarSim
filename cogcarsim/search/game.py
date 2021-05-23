@@ -13,10 +13,22 @@ collision_velocity_down = 0.102
 nocollision_velocity_up = 0.0012
 
 class Grid:
+    """The grid representation of the game."""
     def __init__(self, x_min=-13, y_min=0, x_max=13, y_max=24188, 
                  path_score=0, blob_score=-10, adjacent_score=2):
-        self.height = int((y_max - y_min) // 2)
-        self.width = int((x_max - x_min) // 2)
+        """Grid initialization.
+        
+        Args:
+            x_min (int, optional): The min value of x in the game. Defaults to -13.
+            y_min (int, optional): The min value of y in the game. Defaults to 0.
+            x_max (int, optional): The max value of x in the game. Defaults to 13.
+            y_max (int, optional): The max value of y in the game. Defaults to 24188.
+            path_score (int, optional): The path score of the game. Defaults to 0.
+            blob_score (int, optional): The blob score of the game. Defaults to -10.
+            adjacent_score (int, optional): The score for adjacent tile to the blob. Defaults to 2.
+        """
+        self.height = int((y_max - y_min) // 2)     # the height of the grid
+        self.width = int((x_max - x_min) // 2)      # the width of the grid
         self.path_score = path_score
         self.blob_score = blob_score
         self.adjacent_score = adjacent_score
@@ -25,20 +37,34 @@ class Grid:
         self.y_min = y_min
         self.x_max = x_max
         self.y_max = y_max
-        self.x_range = (0.0, float(self.width)-1)
-        self.y_range = (0.0, float(self.height)-1)
+        self.x_range = (0.0, float(self.width)-1)   # the horizontal range of the grid
+        self.y_range = (0.0, float(self.height)-1)  # the vertical range of the grid
         self._isGoal = False
         # self.state = {}
-        self.goal = (self.height-1, 6)
-        self.available = []
+        self.goal = (self.height-1, 6)              # the position of the goal
+        # self.available = []
         
     def __len__(self):
+        """Returns the dimensions of the gameGrid."""
         return len(self.gameGrid)       
     
     def setTileScore(self, y, x, score):
+        """Set the score for given tile in the gameGrid.
+
+        Args:
+            y (int): The y coordinate.
+            x (int): The x coordinate.
+            score (float): The given score.
+        """
         self.gameGrid[y][x] = score
         
     def setAdjacentScore(self, y, x):
+        """Set the score for all adjacent tile of the blob.
+
+        Args:
+            y (int): The y grid coordinate of the blob.
+            x (int): The x grid coordinate of the blob.
+        """
         if self.gameGrid[y+1][x] == self.path_score:
             self.setTileScore(y+1, x, self.adjacent_score)    # up
         if self.gameGrid[y-1][x] == self.path_score:
@@ -52,12 +78,17 @@ class Grid:
         return self.gameGrid[key]
     
     def isFinish(self):
+        """Check if the game finished.
+
+        Returns:
+            boolean
+        """
         return self._isGoal
     
     def finished(self):
+        """Set the game state as finished."""
         self._isGoal = True
-    
-    @staticmethod
+
     def slidingWindow(self, overlap, carPos, velocity):
         # The visible lane length is 800
         # we want the window length is equal to the perceived lane length
@@ -67,7 +98,21 @@ class Grid:
         for y in range(0, self.height, step):
             yield (self[y:y+windowSize[0], 0:windowSize[1]], (y+windowSize[0], 6), velocity)  # yield the sliding window and its goal
 
-def toMatrixCoords(x_range, y_range, x_min, x_max, y_min, y_max, obj):
+def toGridCoords(x_range, y_range, x_min, x_max, y_min, y_max, obj):
+    """Convert the game coordinates of an object into grid coordinates.
+
+    Args:
+        x_range (float tuple): The horizontal range of the grid.
+        y_range (float tuple): he vertical range of the grid.
+        x_min (int): The min value of x in the game.
+        x_max (int): The max value of x in the game.
+        y_min (int): The min value of y in the game.
+        y_max (int): The max value of y in the game.
+        obj (VPython object): The VPython object.
+
+    Returns:
+        int: The converted y and x grid coordinates
+    """
     x_obj = obj.x
     y_obj = obj.y
     x = int(round((x_range[1]-x_range[0])*(x_obj-x_min)/(x_max-x_min), 0) + x_range[0])
@@ -75,24 +120,53 @@ def toMatrixCoords(x_range, y_range, x_min, x_max, y_min, y_max, obj):
     return y, x
 
 def toGameCoords(x_range, y_range, x_min, x_max, y_min, y_max, y, x):
+    """Convert the grid coordinates of object into game coordinate.
+
+    Args:
+        x_range (float tuple): The horizontal range of the grid.
+        y_range (float tuple): The vertical range of the grid.
+        x_min (int): The min value of x in the game.
+        x_max (int): The max value of x in the game.
+        y_min (int): The min value of y in the game.
+        y_max (int): The max value of y in the game.
+        y (int): The grid y coordinate of the object.
+        x (int): The grid x coordinate of the object.
+
+    Returns:
+        float: the converted y and x game coordinates.
+    """
     x_obj = int(round((x-x_range[0])/(x_range[1]-x_range[0])*(x_max-x_min), 0) + x_min)
     y_obj = int(round((y-y_range[0])/(y_range[1]-y_range[0])*(y_max-y_min), 0) + y_min)
     return y_obj, x_obj 
     
 class GameGraph:
+    """The graph representation of the game"""
     def __init__(self, blob_score):
-        # self.max_depth = max_depth
+        """The graph initialization.
+
+        Args:
+            blob_score (float): the blob score in the graph.
+        """
         self.velocity = 1.6
         self.blob_score = blob_score
-        # self.score = 0
-        # self.past_score = 0
         self.G = nx.DiGraph()
         self.id = 0     # store the last id in the graph
         self.curID = 0  # store the current id (position of car) in the graph
         self.available = []
-        # self.finished = False
 
     def expand(self, root_id, y, x, max_depth, velocity, grid):
+        """Graph expansion based on the max_depth parameter.
+        If max_depth reached but the last node is not grid.height
+        The graph will continue to expand using a node in the last layer as new root
+
+        Args:
+            root_id (int): The id of the root node.
+            y (int): The y grid coordinate of the root.
+            x (int): The x grid coordinate of the root.
+            max_depth (int): The max depth of the graph.
+            velocity (float): The current velocity at root.
+            grid (Grid): The game grid.
+        """
         # add the root node
         last_y = grid.height
         self.velocity = velocity
@@ -163,13 +237,35 @@ class GameGraph:
                 children_ids = []
     
     def gameEvaluation(self, id):
+        """Get the node weight and edge weight of the given node id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            float: The sum of node weight and edge weight.
+        """
         return self.getNodeWeight(id) + self.getEdgeWeight(id)
         # return score
     
     def setNodeWeight(self, id, score):
+        """Set the node weight of the given node id.
+
+        Args:
+            id (int): The node id.
+            score (float): the score to set.
+        """
         self.G.nodes[id]['weight'] = score
         
     def getNodeWeight(self, id):
+        """Returns the node weight of the node has given id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            float: The node weight.
+        """
         return self.G.nodes[id]['weight']
         
     # def setScore(self, score):
@@ -179,36 +275,102 @@ class GameGraph:
     #     return self.score
     
     def getEdgeWeight(self, id):
+        """Returns the edge weight of the node has given id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            float: The weight of the node.
+        """
         return self.G.in_degree(id, weight='weight')
         
     def getNodeInfo(self, id):
+        """Returns all info of the node has given id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            dict: A dictionary contains node info.
+        """
         return self.G.nodes[id]
     
     def getParent(self, id):
+        """Returns the list of parents of the node has given id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            list: Parents of the node.
+        """
         return self.G.predecessors(id)
     
     def updateCurrentNode(self, id):
+        """Update the current id of the graph.
+
+        Args:
+            id (int): The up-to-date id.
+        """
         self.curID = id
         
     def finished(self, id):
+        """Set the state of the node has given id.
+
+        Args:
+            id (int): The node id.
+        """
         self.G.nodes[id]['finished'] = True
     
     def isFinished(self, id):
+        """Check the state of the node has the given id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            boolean: The state of the node.
+        """
         return self.G.nodes[id]['finished']
     
     def getNodeGridPosition(self, id):
+        """Return the position of the node has the given id in the Grid.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            int tuple: The y and x coordinates of the node.
+        """
         y, x = self.G.nodes[id]['location']
         return y, x
 
     def getAvailable(self, id):
+        """Get the list of successors of the node has given id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            list: List of successors of the node.
+        """
         self.available = sorted(list(self.G.successors(id)))
         return self.available
 
     def doMove(self, action):
-        reversed_action = Actions.reverseDirection(action)
+        """Update the curID of the graph according to the given action.
+
+        Args:
+            action (Actions): The given action.
+
+        Returns:
+            int or None: Return None if the node has no possible action, curID otherwise.
+        """
         posible_actions = self.getPossibleActions(self.curID)
         if len(posible_actions) == 0:
             return None
+        reversed_action = Actions.reverseDirection(action)
         if len(posible_actions) == 3:
             if reversed_action == Actions.LEFT:
                 self.updateCurrentNode(self.available[0])
@@ -228,9 +390,18 @@ class GameGraph:
             if reversed_action == Actions.RIGHT:
                 if (self.G.nodes[self.curID]['location'][1] + 1 == self.G.nodes[self.available[1]]['location'][1]):
                     self.updateCurrentNode(self.available[1])
-        # return self.curID
+        return self.curID
     
     def generateSuccessors(self, action, id):
+        """Get the successor of the node has given id according to the action.
+
+        Args:
+            action (Actions): The given action.
+            id (int): The node id.
+
+        Returns:
+            int or None: None if the node has no successors, successorID otherwise.
+        """
         reversed_action = Actions.reverseDirection(action)
         posible_actions = self.getPossibleActions(id)
         successorID = id
@@ -258,6 +429,14 @@ class GameGraph:
         return successorID
             
     def getPossibleActions(self, id):
+        """Get the possible action of the node has given id.
+
+        Args:
+            id (int): The node id.
+
+        Returns:
+            list: List of possible actions.
+        """
         # posibleActions = []
         self.getAvailable(id)
         if len(self.available) == 0:

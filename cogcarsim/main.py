@@ -1,4 +1,4 @@
-from cogCarSim import *
+from car.cogCarSim import *
 from stats import *
 
 def get_name():

@@ -5,7 +5,7 @@ from networkx.readwrite.graphml import GraphMLWriter
 from visual import *
 display.enable_shaders = False
 import time
-# import datetime
+# import datetime 
 import random
 import json
 import os
@@ -16,12 +16,12 @@ import csv
 # from math import ceil
 
 
-from blobEntry import *
-from speedGate import *
-from pathEntry import *
-from game import *
-from search import *
-from mcts import MCTSPlayer
+from obstacles.blobEntry import *
+from obstacles.speedGate import *
+from obstacles.pathEntry import *
+from search.game import *
+# from search import *
+from search.mcts import MCTSPlayer
 
 refresh_rate = 60
 default_start_velocity = 1.6
@@ -348,7 +348,7 @@ class CogCarSim:
         gameGrid = Grid(y_max=last_y, path_score=path_score, 
                         blob_score=blob_score, adjacent_score=adjacent_score)
         for blob in self.blobs:
-            y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
+            y, x = toGridCoords(gameGrid.x_range, gameGrid.y_range,
                                            gameGrid.x_min, gameGrid.x_max, 
                                            gameGrid.y_min, gameGrid.y_max, blob)
             gameGrid.setTileScore(y, x, blob_score) # set score for the blob position tile on the game grid
@@ -359,7 +359,13 @@ class CogCarSim:
         gameGrid.setTileScore(-1, last_row, goal_score) # every tile of the last row can be considered as goal
         return gameGrid
         
-    def create_graph(self, blob_score=10):
+    def create_graph(self, blob_score=-10):
+        """Create a graph representation of the game state
+
+        :param blob_score: score of the blob, defaults to 10
+        :type blob_score: int, optional
+        :return: the graph representation
+        """
         gameGraph = GameGraph(blob_score)
         return gameGraph
 
@@ -456,35 +462,62 @@ class CogCarSim:
                 break
         return blob_passed
     
-    def gate_passed(self, xcar, ycar, is_gate_on, velocity):
+    def gate_passed(self, xcar, ycar, is_gate_on, control_velocity):
+        """Check if the car passed the gate or not
+
+        :param xcar: the horizontal coordinate of the car object
+        :type xcar: float
+        :param ycar: the vertical coordinate of the car object
+        :type ycar: float
+        :param is_gate_on: check if the player want to have gates
+        :type is_gate_on: bool
+        :param velocity: controlled velocity of the gate
+        :type velocity: float
+        :return: the controlled velocity if passed the gate
+        :rtype: float
+        """
         if len(self.gates) >= 1 and is_gate_on == True:     
             if self.gates[0].y < ycar - safe_back_y:
                 if self.gates[0].x == int(xcar):
-                    velocity = self.gates[0].get_velocity()
+                    control_velocity = self.gates[0].get_velocity()
                 del self.gates[0]
-        return velocity
+        return control_velocity
     
     def gridToLogFile(self, gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score):
-            now = datetime.datetime.now()
-            dt_string = now.strftime("%d-%m-%Y-%H-%M-%S")
-            file = 'logs/' + 'run' + dt_string + '.txt'
-            line = ''
-            with open(file, 'w') as f:
-                for i in range(gameGrid.height):
-                    line+='|'
-                    for j in range(gameGrid.width):
-                        if gameGrid[i][j] == path_score or gameGrid[i][j] == adjacent_score:
-                            line+=' '
-                        elif gameGrid[i][j] == blob_score:
-                            line+='b'
-                        elif gameGrid[i][j] == collision_score:
-                            line+='x'
-                        elif gameGrid[i][j] == car_score:
-                            line+='c'
-                    line+='|\n'
-                f.writelines(line)
-                f.writelines('------------------------------------------\n')
-                f.close()
+        """Create a log file to record the pathway of the car object
+
+        :param gameGrid: the grid representation of the game
+        :param path_score: score of the path
+        :type path_score: float
+        :param blob_score: score of the blob
+        :type blob_score: float
+        :param adjacent_score: score of adjacent tile to blob
+        :type adjacent_score: float
+        :param collision_score: penalty on collision
+        :type collision_score: float
+        :param car_score: the traverse path of the score set as car_score
+        :type car_score: float
+        """
+        now = datetime.datetime.now()
+        dt_string = now.strftime("%d-%m-%Y-%H-%M-%S")
+        file = 'logs/' + 'run' + dt_string + '.txt'
+        line = ''
+        with open(file, 'w') as f:
+            for i in range(gameGrid.height):
+                line+='|'
+                for j in range(gameGrid.width):
+                    if gameGrid[i][j] == path_score or gameGrid[i][j] == adjacent_score:
+                        line+=' '
+                    elif gameGrid[i][j] == blob_score:
+                        line+='b'
+                    elif gameGrid[i][j] == collision_score:
+                        line+='x'
+                    elif gameGrid[i][j] == car_score:
+                        line+='c'
+                line+='|\n'
+            f.writelines(line)
+            f.writelines('------------------------------------------\n')
+            f.close()
     
     def check_collision(self, xcar, ycar, step):
         """
@@ -681,7 +714,7 @@ class CogCarSim:
                 wheelpos = wheel_positions[step]
                 throttlepos = throttle_positions[step]
             elif reinforce:
-                y, x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
+                y, x = toGridCoords(gameGrid.x_range, gameGrid.y_range,
                                               gameGrid.x_min, gameGrid.x_max, 
                                               gameGrid.y_min, gameGrid.y_max, carPos)
                 if gameGrid[y][x] == path_score:
@@ -717,7 +750,6 @@ class CogCarSim:
                     theta = math.atan((x_dest - carPos.x)/duration)
                     for _ in range(duration):
                         wheelpos = Actions.radianToWheel(theta)
-                        # print(wheelpos)
                         throttlepos = 1000.0
             else:
                 (w, t, b, c) = wheel.getprecise()
@@ -733,6 +765,7 @@ class CogCarSim:
             if task == auto_speed or task == agent_speed:
                 chosen_velocity = velocity # to be used in collision analyses
                 velocity += passed * nocollision_velocity_up
+                car.setVelocity(velocity)
                 # velocity += nocollision_velocity_up
             elif task == manual_speed:
                 throttle_ratio = 1.0*(throttlepos - pedal_neutral) / (pedal_down - pedal_neutral)
@@ -747,7 +780,7 @@ class CogCarSim:
                 max_velocity = velocity
                 
             # Steering
-            xp = carPos.x + wheelpos * velocity / wheel_sensitivity
+            xp, yp = car.move(wheelpos)
             
             if (xp > right_lane_x - lane_margin):
                 xp = right_lane_x - lane_margin
@@ -763,7 +796,7 @@ class CogCarSim:
             old_interval = sys.getcheckinterval()
             sys.setcheckinterval(100000)
             carPos.x = xp
-            carPos.y = carPos.y + velocity
+            carPos.y = yp
             debug_label.pos = carPos
             
             self.scene.center.x = xp
@@ -774,7 +807,7 @@ class CogCarSim:
             
             # Collision detection and handing
             
-            car_y, car_x = toMatrixCoords(gameGrid.x_range, gameGrid.y_range,
+            car_y, car_x = toGridCoords(gameGrid.x_range, gameGrid.y_range,
                                                    gameGrid.x_min, gameGrid.x_max, 
                                                    gameGrid.y_min, gameGrid.y_max, carPos)            
             collision, collided_color = self.check_collision(carPos.x, carPos.y, step)
@@ -873,27 +906,49 @@ class Agent:
         self.velocity = velocity
         
     def move(self, wheelpos):
+        """Calculate the position of the car base on wheelpos
+
+        :param wheelpos: [description]
+        :type wheelpos: [type]
+        :return: [description]
+        :rtype: [type]
+        """
         car_x = self.car.pos.x + wheelpos * self.velocity / wheel_sensitivity
         car_y = self.car.pos.y + self.velocity
         return car_x, car_y
         
     def getPosition(self):
+        """Return the current position of the car object
+
+        Returns:
+            float tuple: current position of the car object
+        """
         return self.car.pos
     
-    def updateVelocity(self, acceleration):
-        self.velocity += acceleration
+    # def updateVelocity(self, acceleration):
+    #     """Update the velocity
+
+    #     Args:
+    #         acceleration (float): the acceleration
+    #     """
+    #     self.velocity += acceleration
         
     def setVelocity(self, new_velocity):
+        """[summary]
+
+        Args:
+            new_velocity ([type]): [description]
+        """
         self.velocity = new_velocity
         
-    def getLegalMove(self, wheelpos):
-        legal = []
-        car_x, _ = self.move(wheelpos)
-        if car_x > right_lane_x - lane_margin:
-            legal = ["Left", "Straight"]
-            return legal
-        if car_x < left_lane_x + lane_margin:
-            legal = ["Right", "Straight"]
-            return legal
-        legal = ["Left", "Right", "Straight"]
-        return legal
+    # def getLegalMove(self, wheelpos):
+    #     legal = []
+    #     car_x, _ = self.move(wheelpos)
+    #     if car_x > right_lane_x - lane_margin:
+    #         legal = ["Left", "Straight"]
+    #         return legal
+    #     if car_x < left_lane_x + lane_margin:
+    #         legal = ["Right", "Straight"]
+    #         return legal
+    #     legal = ["Left", "Right", "Straight"]
+    #     return legal

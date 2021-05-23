@@ -1,0 +1,2364 @@
+<!doctype html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+    <title>search API documentation</title>
+    <meta name="description" content="" />
+
+  <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+  
+  <style type="text/css">
+  
+* {
+  box-sizing: border-box;
+}
+/*! normalize.css v1.1.1 | MIT License | git.io/normalize */
+
+/* ==========================================================================
+   HTML5 display definitions
+   ========================================================================== */
+
+/**
+ * Correct `block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/**
+ * Correct `inline-block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+audio,
+canvas,
+video {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Firefox 3, and Safari 4.
+ * Known issue: no IE 6 support.
+ */
+
+[hidden] {
+    display: none;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/**
+ * 1. Prevent system color scheme's background color being used in Firefox, IE,
+ *    and Opera.
+ * 2. Prevent system color scheme's text color being used in Firefox, IE, and
+ *    Opera.
+ * 3. Correct text resizing oddly in IE 6/7 when body `font-size` is set using
+ *    `em` units.
+ * 4. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+
+html {
+    background: #fff; /* 1 */
+    color: #000; /* 2 */
+    font-size: 100%; /* 3 */
+    -webkit-text-size-adjust: 100%; /* 4 */
+    -ms-text-size-adjust: 100%; /* 4 */
+}
+
+/**
+ * Address `font-family` inconsistency between `textarea` and other form
+ * elements.
+ */
+
+html,
+button,
+input,
+select,
+textarea {
+    font-family: sans-serif;
+}
+
+/**
+ * Address margins handled incorrectly in IE 6/7.
+ */
+
+body {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/**
+ * Address `outline` inconsistency between Chrome and other browsers.
+ */
+
+a:focus {
+    outline: thin dotted;
+}
+
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/**
+ * Address font sizes and margins set differently in IE 6/7.
+ * Address font sizes within `section` and `article` in Firefox 4+, Safari 5,
+ * and Chrome.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+}
+
+h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+h5 {
+    font-size: 0.83em;
+    margin: 1.67em 0;
+}
+
+h6 {
+    font-size: 0.67em;
+    margin: 2.33em 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Safari 5, and Chrome.
+ */
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 3+, Safari 4/5, and Chrome.
+ */
+
+b,
+strong {
+    font-weight: bold;
+}
+
+blockquote {
+    margin: 1em 40px;
+}
+
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+
+dfn {
+    font-style: italic;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ * Known issue: no IE 6/7 normalization.
+ */
+
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 6/7/8/9.
+ */
+
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+p,
+pre {
+    margin: 1em 0;
+}
+
+/**
+ * Correct font family set oddly in IE 6, Safari 4/5, and Chrome.
+ */
+
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, serif;
+    _font-family: 'courier new', monospace;
+    font-size: 1em;
+}
+
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+
+pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/**
+ * Address CSS quotes not supported in IE 6/7.
+ */
+
+q {
+    quotes: none;
+}
+
+/**
+ * Address `quotes` property not supported in Safari 4.
+ */
+
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+dl,
+menu,
+ol,
+ul {
+    margin: 1em 0;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+
+/**
+ * Address paddings set differently in IE 6/7.
+ */
+
+menu,
+ol,
+ul {
+    padding: 0 0 0 40px;
+}
+
+/**
+ * Correct list images handled incorrectly in IE 7.
+ */
+
+nav ul,
+nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* ==========================================================================
+   Embedded content
+   ========================================================================== */
+
+/**
+ * 1. Remove border when inside `a` element in IE 6/7/8/9 and Firefox 3.
+ * 2. Improve image quality when scaled in IE 7.
+ */
+
+img {
+    border: 0; /* 1 */
+    -ms-interpolation-mode: bicubic; /* 2 */
+}
+
+/**
+ * Correct overflow displayed oddly in IE 9.
+ */
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+/**
+ * Address margin not present in IE 6/7/8/9, Safari 5, and Opera 11.
+ */
+
+figure {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/**
+ * Correct margin displayed oddly in IE 6/7.
+ */
+
+form {
+    margin: 0;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct color not being inherited in IE 6/7/8/9.
+ * 2. Correct text not wrapping in Firefox 3.
+ * 3. Correct alignment displayed oddly in IE 6/7.
+ */
+
+legend {
+    border: 0; /* 1 */
+    padding: 0;
+    white-space: normal; /* 2 */
+    *margin-left: -7px; /* 3 */
+}
+
+/**
+ * 1. Correct font size not being inherited in all browsers.
+ * 2. Address margins set differently in IE 6/7, Firefox 3+, Safari 5,
+ *    and Chrome.
+ * 3. Improve appearance and consistency in all browsers.
+ */
+
+button,
+input,
+select,
+textarea {
+    font-size: 100%; /* 1 */
+    margin: 0; /* 2 */
+    vertical-align: baseline; /* 3 */
+    *vertical-align: middle; /* 3 */
+}
+
+/**
+ * Address Firefox 3+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+
+button,
+input {
+    line-height: normal;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 6+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+
+button,
+select {
+    text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ * 4. Remove inner spacing in IE 7 without affecting normal text inputs.
+ *    Known issue: inner spacing remains in IE 6.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+    *overflow: visible;  /* 4 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+/**
+ * 1. Address box sizing set to content-box in IE 8/9.
+ * 2. Remove excess padding in IE 8/9.
+ * 3. Remove excess padding in IE 7.
+ *    Known issue: excess padding remains in IE 6.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+    *height: 13px; /* 3 */
+    *width: 13px; /* 3 */
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+input[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box; /* 2 */
+    box-sizing: content-box;
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * Remove inner padding and border in Firefox 3+.
+ */
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/**
+ * 1. Remove default vertical scrollbar in IE 6/7/8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+
+textarea {
+    overflow: auto; /* 1 */
+    vertical-align: top; /* 2 */
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+  </style>
+
+  <style type="text/css">
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  body {
+    background: #fff;
+    font-family: "Source Sans Pro", "Helvetica Neueue", Helvetica, sans;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6em;
+  }
+  #content {
+    width: 70%;
+    max-width: 850px;
+    float: left;
+    padding: 30px 60px;
+    border-left: 1px solid #ddd;
+  }
+  #sidebar {
+    width: 25%;
+    float: left;
+    padding: 30px;
+    overflow: hidden;
+  }
+  #nav {
+    font-size: 130%;
+    margin: 0 0 15px 0;
+  }
+
+  #top {
+    display: block;
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: .85em;
+    text-transform: uppercase;
+  }
+
+  #footer {
+    font-size: .75em;
+    padding: 5px 30px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+  }
+    #footer p {
+      margin: 0 0 0 30px;
+      display: inline-block;
+    }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 300;
+  }
+  h1 {
+    font-size: 2.5em;
+    line-height: 1.1em;
+    margin: 0 0 .50em 0;
+  }
+
+  h2 {
+    font-size: 1.75em;
+    margin: 1em 0 .50em 0;
+  }
+
+  h3 {
+    margin: 25px 0 10px 0;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 105%;
+  }
+
+  a {
+    color: #058;
+    text-decoration: none;
+    transition: color .3s ease-in-out;
+  }
+
+  a:hover {
+    color: #e08524;
+    transition: color .3s ease-in-out;
+  }
+
+  pre, code, .mono, .name {
+    font-family: "Ubuntu Mono", "Cousine", "DejaVu Sans Mono", monospace;
+  }
+
+  .title .name {
+    font-weight: bold;
+  }
+  .section-title {
+    margin-top: 2em;
+  }
+  .ident {
+    color: #900;
+  }
+
+  code {
+    background: #f9f9f9;
+  } 
+
+  pre {
+    background: #fefefe;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 0 #f3f3f3;
+    margin: 0 30px;
+    padding: 15px 30px;
+  }
+
+  .codehilite {
+    margin: 0 30px 10px 30px;
+  }
+
+    .codehilite pre {
+      margin: 0;
+    }
+    .codehilite .err { background: #ff3300; color: #fff !important; } 
+
+  table#module-list {
+    font-size: 110%;
+  }
+
+    table#module-list tr td:first-child {
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+
+    table#module-list td {
+      vertical-align: top;
+      padding-bottom: 8px;
+    }
+
+      table#module-list td p {
+        margin: 0 0 7px 0;
+      }
+
+  .def {
+    display: table;
+  }
+
+    .def p {
+      display: table-cell;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .def p:first-child {
+      white-space: nowrap;
+    }
+
+    .def p:last-child {
+      width: 100%;
+    }
+
+
+  #index {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+    ul#index .class_name {
+      /* font-size: 110%; */
+      font-weight: bold;
+    }
+    #index ul {
+      margin: 0;
+    }
+
+  .item {
+    margin: 0 0 15px 0;
+  }
+
+    .item .class {
+      margin: 0 0 25px 30px;
+    }
+
+      .item .class ul.class_list {
+        margin: 0 0 20px 0;
+      }
+
+    .item .name {
+      background: #fafafa;
+      margin: 0;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 3px;
+      display: inline-block;
+      min-width: 40%;
+    }
+      .item .name:hover {
+        background: #f6f6f6;
+      }
+
+    .item .empty_desc {
+      margin: 0 0 5px 0;
+      padding: 0;
+    }
+
+    .item .inheritance {
+      margin: 3px 0 0 30px;
+    }
+
+    .item .inherited {
+      color: #666;
+    }
+
+    .item .desc {
+      padding: 0 8px;
+      margin: 0;
+    }
+
+      .item .desc p {
+        margin: 0 0 10px 0;
+      }
+
+    .source_cont {
+      margin: 0;
+      padding: 0;
+    }
+
+    .source_link a {
+      background: #ffc300;
+      font-weight: 400;
+      font-size: .75em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 1px 1px 0 #f4b700;
+      
+      padding: 3px 8px;
+      border-radius: 2px;
+      transition: background .3s ease-in-out;
+    }
+      .source_link a:hover {
+        background: #FF7200;
+        text-shadow: none;
+        transition: background .3s ease-in-out;
+      }
+
+    .source {
+      display: none;
+      max-height: 600px;
+      overflow-y: scroll;
+      margin-bottom: 15px;
+    }
+
+      .source .codehilite {
+        margin: 0;
+      }
+
+  .desc h1, .desc h2, .desc h3 {
+    font-size: 100% !important;
+  }
+  .clear {
+    clear: both;
+  }
+
+  @media all and (max-width: 950px) {
+    #sidebar {
+      width: 35%;
+    }
+    #content {
+      width: 65%;
+    }
+  }
+  @media all and (max-width: 650px) {
+    #top {
+      display: none;
+    }
+    #sidebar {
+      float: none;
+      width: auto;
+    }
+    #content {
+      float: none;
+      width: auto;
+      padding: 30px;
+    }
+
+    #index ul {
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    #index ul li {
+      display: inline-block;
+      margin-right: 30px;
+    }
+    #footer {
+      text-align: left;
+    }
+    #footer p {
+      display: block;
+      margin: inherit;
+    }
+  }
+
+  /*****************************/
+
+  </style>
+
+  <style type="text/css">
+  .codehilite .hll { background-color: #ffffcc }
+.codehilite  { background: #f8f8f8; }
+.codehilite .c { color: #408080; font-style: italic } /* Comment */
+.codehilite .err { border: 1px solid #FF0000 } /* Error */
+.codehilite .k { color: #008000; font-weight: bold } /* Keyword */
+.codehilite .o { color: #666666 } /* Operator */
+.codehilite .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.codehilite .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.codehilite .cp { color: #BC7A00 } /* Comment.Preproc */
+.codehilite .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.codehilite .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.codehilite .cs { color: #408080; font-style: italic } /* Comment.Special */
+.codehilite .gd { color: #A00000 } /* Generic.Deleted */
+.codehilite .ge { font-style: italic } /* Generic.Emph */
+.codehilite .gr { color: #FF0000 } /* Generic.Error */
+.codehilite .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.codehilite .gi { color: #00A000 } /* Generic.Inserted */
+.codehilite .go { color: #888888 } /* Generic.Output */
+.codehilite .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.codehilite .gt { color: #0044DD } /* Generic.Traceback */
+.codehilite .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.codehilite .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.codehilite .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.codehilite .kp { color: #008000 } /* Keyword.Pseudo */
+.codehilite .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.codehilite .kt { color: #B00040 } /* Keyword.Type */
+.codehilite .m { color: #666666 } /* Literal.Number */
+.codehilite .s { color: #BA2121 } /* Literal.String */
+.codehilite .na { color: #7D9029 } /* Name.Attribute */
+.codehilite .nb { color: #008000 } /* Name.Builtin */
+.codehilite .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.codehilite .no { color: #880000 } /* Name.Constant */
+.codehilite .nd { color: #AA22FF } /* Name.Decorator */
+.codehilite .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.codehilite .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.codehilite .nf { color: #0000FF } /* Name.Function */
+.codehilite .nl { color: #A0A000 } /* Name.Label */
+.codehilite .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.codehilite .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.codehilite .nv { color: #19177C } /* Name.Variable */
+.codehilite .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.codehilite .w { color: #bbbbbb } /* Text.Whitespace */
+.codehilite .mb { color: #666666 } /* Literal.Number.Bin */
+.codehilite .mf { color: #666666 } /* Literal.Number.Float */
+.codehilite .mh { color: #666666 } /* Literal.Number.Hex */
+.codehilite .mi { color: #666666 } /* Literal.Number.Integer */
+.codehilite .mo { color: #666666 } /* Literal.Number.Oct */
+.codehilite .sa { color: #BA2121 } /* Literal.String.Affix */
+.codehilite .sb { color: #BA2121 } /* Literal.String.Backtick */
+.codehilite .sc { color: #BA2121 } /* Literal.String.Char */
+.codehilite .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.codehilite .s2 { color: #BA2121 } /* Literal.String.Double */
+.codehilite .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.codehilite .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.codehilite .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.codehilite .sx { color: #008000 } /* Literal.String.Other */
+.codehilite .sr { color: #BB6688 } /* Literal.String.Regex */
+.codehilite .s1 { color: #BA2121 } /* Literal.String.Single */
+.codehilite .ss { color: #19177C } /* Literal.String.Symbol */
+.codehilite .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #0000FF } /* Name.Function.Magic */
+.codehilite .vc { color: #19177C } /* Name.Variable.Class */
+.codehilite .vg { color: #19177C } /* Name.Variable.Global */
+.codehilite .vi { color: #19177C } /* Name.Variable.Instance */
+.codehilite .vm { color: #19177C } /* Name.Variable.Magic */
+.codehilite .il { color: #666666 } /* Literal.Number.Integer.Long */
+  </style>
+
+  <style type="text/css">
+  
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
+
+  </style>
+
+  <script type="text/javascript">
+  function toggle(id, $link) {
+    $node = document.getElementById(id);
+    if (!$node)
+    return;
+    if (!$node.style.display || $node.style.display == 'none') {
+    $node.style.display = 'block';
+    $link.innerHTML = 'Hide source &nequiv;';
+    } else {
+    $node.style.display = 'none';
+    $link.innerHTML = 'Show source &equiv;';
+    }
+  }
+  </script>
+</head>
+<body>
+<a href="#" id="top">Top</a>
+
+<div id="container">
+    
+  
+  <div id="sidebar">
+    <h1>Index</h1>
+    <ul id="index">
+
+    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
+      
+  <ul>
+    <li class="mono"><a href="#search.aStarSearch">aStarSearch</a></li>
+    <li class="mono"><a href="#search.manhattanHeuristic">manhattanHeuristic</a></li>
+    <li class="mono"><a href="#search.nullHeuristic">nullHeuristic</a></li>
+  </ul>
+
+    </li>
+
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
+      <ul>
+        <li class="mono">
+        <span class="class_name"><a href="#search.Node">Node</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#search.Node.__init__">__init__</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#search.PriorityQueue">PriorityQueue</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#search.PriorityQueue.__init__">__init__</a></li>
+    <li class="mono"><a href="#search.PriorityQueue.isEmpty">isEmpty</a></li>
+    <li class="mono"><a href="#search.PriorityQueue.pop">pop</a></li>
+    <li class="mono"><a href="#search.PriorityQueue.push">push</a></li>
+    <li class="mono"><a href="#search.PriorityQueue.update">update</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#search.SafestPathProblem">SafestPathProblem</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#search.SafestPathProblem.__init__">__init__</a></li>
+    <li class="mono"><a href="#search.SafestPathProblem.getCostOfActions">getCostOfActions</a></li>
+    <li class="mono"><a href="#search.SafestPathProblem.getStartState">getStartState</a></li>
+    <li class="mono"><a href="#search.SafestPathProblem.getSuccessors">getSuccessors</a></li>
+    <li class="mono"><a href="#search.SafestPathProblem.isGoalState">isGoalState</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#search.SearchProblem">SearchProblem</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#search.SearchProblem.getCostOfActions">getCostOfActions</a></li>
+    <li class="mono"><a href="#search.SearchProblem.getStartState">getStartState</a></li>
+    <li class="mono"><a href="#search.SearchProblem.getSuccessors">getSuccessors</a></li>
+    <li class="mono"><a href="#search.SearchProblem.isGoalState">isGoalState</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#search.ShortestPathProblem">ShortestPathProblem</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#search.ShortestPathProblem.__init__">__init__</a></li>
+    <li class="mono"><a href="#search.ShortestPathProblem.getCostOfActions">getCostOfActions</a></li>
+    <li class="mono"><a href="#search.ShortestPathProblem.getStartState">getStartState</a></li>
+    <li class="mono"><a href="#search.ShortestPathProblem.getSuccessors">getSuccessors</a></li>
+    <li class="mono"><a href="#search.ShortestPathProblem.isGoalState">isGoalState</a></li>
+  </ul>
+
+        </li>
+      </ul>
+    </li>
+
+    </ul>
+  </div>
+
+    <article id="content">
+      
+  
+
+  
+
+
+  <header id="section-intro">
+  <h1 class="title"><span class="name">search</span> module</h1>
+  
+  
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search', this);">Show source &equiv;</a></p>
+  <div id="source-search" class="source">
+    <div class="codehilite"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">heapq</span>
+<span class="c1"># from game import Actions, Grid</span>
+
+<span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
+
+<span class="k">class</span> <span class="nc">PriorityQueue</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">item</span><span class="p">)</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">item</span>
+
+    <span class="k">def</span> <span class="nf">isEmpty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        * If item already in priority queue with higher priority, update its priority and rebuild the heap.</span>
+<span class="sd">        * If item already in priority queue with equal or lower priority, do nothing.</span>
+<span class="sd">        * If item not in priority queue, do the same thing as self.push.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">priority</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">priority</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+                <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">)</span>
+            
+<span class="k">def</span> <span class="nf">aStarSearch</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">heuristic</span><span class="p">):</span>
+    <span class="n">actions</span><span class="o">=</span><span class="n">PriorityQueue</span><span class="p">()</span>
+    <span class="n">locations</span><span class="o">=</span><span class="n">PriorityQueue</span><span class="p">()</span>
+    <span class="n">startLocation</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">getStartState</span><span class="p">()</span>
+    <span class="c1"># (location, actions, cost)</span>
+    <span class="n">startNode</span> <span class="o">=</span> <span class="p">(</span><span class="n">startLocation</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">actions</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">startNode</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">locations</span><span class="o">.</span><span class="n">push</span><span class="p">([</span><span class="n">startLocation</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">visited</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
+    
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">actions</span><span class="o">.</span><span class="n">isEmpty</span><span class="p">():</span>
+        <span class="n">currentNode</span><span class="o">=</span><span class="n">actions</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="n">locations</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">problem</span><span class="o">.</span><span class="n">isGoalState</span><span class="p">(</span><span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">location</span>
+        <span class="k">if</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  
+            <span class="k">for</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">getSuccessors</span><span class="p">(</span><span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="n">cost</span> <span class="o">=</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">successor</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">totalCost</span> <span class="o">=</span> <span class="n">cost</span> <span class="o">+</span> <span class="n">heuristic</span><span class="p">(</span><span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">problem</span><span class="p">)</span>
+                    <span class="n">actions</span><span class="o">.</span><span class="n">push</span><span class="p">(</span> <span class="p">(</span><span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="n">successor</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">cost</span><span class="p">),</span> <span class="n">totalCost</span> <span class="p">)</span>
+                    <span class="n">locations</span><span class="o">.</span><span class="n">push</span><span class="p">(</span> <span class="n">location</span> <span class="o">+</span> <span class="p">[</span><span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">totalCost</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="c1"># class MonteCarloTreeSearch(object):</span>
+    
+        
+<span class="k">def</span> <span class="nf">nullHeuristic</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">problem</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A heuristic function estimates the cost from the current state to the nearest</span>
+<span class="sd">    goal in the provided SearchProblem.  This heuristic is trivial.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span>
+
+<span class="k">class</span> <span class="nc">SearchProblem</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+    
+    <span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+    
+    <span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+    
+    <span class="k">def</span> <span class="nf">getCostOfActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+
+<span class="k">class</span> <span class="nc">ShortestPathProblem</span><span class="p">(</span><span class="n">SearchProblem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">costFn</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="c1"># the center of the start</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span><span class="o">=</span><span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">goal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span> <span class="o">=</span> <span class="n">costFn</span>
+        
+        <span class="c1"># For display purposes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">[],</span> <span class="mi">0</span>
+        
+    <span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span>
+    
+    <span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">isGoal</span> <span class="o">=</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span>
+        
+        <span class="k">if</span> <span class="n">isGoal</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">isGoal</span>
+    
+    <span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">successors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Actions</span><span class="o">.</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">STRAIGHT</span><span class="p">]:</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">Actions</span><span class="o">.</span><span class="n">directionToVector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>  <span class="c1">#modified</span>
+            <span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextY</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextX</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">nextX</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span><span class="p">(</span><span class="n">nextState</span><span class="p">)</span>
+            <span class="n">successors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">nextState</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span> <span class="p">)</span>
+                
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">successors</span>
+    
+    <span class="c1"># def getCostOfActions(self, actions):</span>
+    <span class="c1">#     # if actions == None: return 999999</span>
+    <span class="c1">#     y, x = self.getStartState()</span>
+    <span class="c1">#     cost = 0</span>
+    <span class="c1">#     for action in actions:</span>
+    <span class="c1">#         dy, dx = Actions.directionToVector(action)</span>
+    <span class="c1">#         y, x = int(y + dy), int(x + dx)</span>
+    <span class="c1">#         cost += self.costFn( (y, x) )</span>
+    <span class="c1">#     return cost</span>
+
+<span class="k">class</span> <span class="nc">SafestPathProblem</span><span class="p">(</span><span class="n">SearchProblem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">costFn</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="c1"># the center of the start</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">goal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span> <span class="o">=</span> <span class="n">costFn</span>
+        
+        <span class="c1"># For display purpose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">[],</span> <span class="mi">0</span>
+        
+    <span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span>
+    
+    <span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">isGoal</span> <span class="o">=</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span>
+        
+        <span class="k">if</span> <span class="n">isGoal</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">isGoal</span>
+    
+    <span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">successors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Actions</span><span class="o">.</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">STRAIGHT</span><span class="p">]:</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">Actions</span><span class="o">.</span><span class="n">directionToVector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>  <span class="c1">#modified</span>
+            <span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextY</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">height</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextX</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">nextX</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span><span class="p">(</span><span class="n">nextState</span><span class="p">)</span>
+            <span class="n">successors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">nextState</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span> <span class="p">)</span>
+                
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">successors</span>
+    
+<span class="k">def</span> <span class="nf">manhattanHeuristic</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+    <span class="n">xy1</span> <span class="o">=</span> <span class="n">position</span>
+    <span class="n">xy2</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">goal</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xy1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xy1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+  </div>
+
+  </header>
+
+  <section id="section-items">
+
+    <h2 class="section-title" id="header-functions">Functions</h2>
+      
+  <div class="item">
+    <div class="name def" id="search.aStarSearch">
+    <p>def <span class="ident">aStarSearch</span>(</p><p>problem, heuristic)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.aStarSearch', this);">Show source &equiv;</a></p>
+  <div id="source-search.aStarSearch" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">aStarSearch</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">heuristic</span><span class="p">):</span>
+    <span class="n">actions</span><span class="o">=</span><span class="n">PriorityQueue</span><span class="p">()</span>
+    <span class="n">locations</span><span class="o">=</span><span class="n">PriorityQueue</span><span class="p">()</span>
+    <span class="n">startLocation</span><span class="o">=</span><span class="n">problem</span><span class="o">.</span><span class="n">getStartState</span><span class="p">()</span>
+    <span class="c1"># (location, actions, cost)</span>
+    <span class="n">startNode</span> <span class="o">=</span> <span class="p">(</span><span class="n">startLocation</span><span class="p">,</span> <span class="p">[],</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">actions</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">startNode</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">locations</span><span class="o">.</span><span class="n">push</span><span class="p">([</span><span class="n">startLocation</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">visited</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
+    
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">actions</span><span class="o">.</span><span class="n">isEmpty</span><span class="p">():</span>
+        <span class="n">currentNode</span><span class="o">=</span><span class="n">actions</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="n">locations</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">problem</span><span class="o">.</span><span class="n">isGoalState</span><span class="p">(</span><span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">location</span>
+        <span class="k">if</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  
+            <span class="k">for</span> <span class="n">successor</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">getSuccessors</span><span class="p">(</span><span class="n">currentNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="n">cost</span> <span class="o">=</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">successor</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">totalCost</span> <span class="o">=</span> <span class="n">cost</span> <span class="o">+</span> <span class="n">heuristic</span><span class="p">(</span><span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">problem</span><span class="p">)</span>
+                    <span class="n">actions</span><span class="o">.</span><span class="n">push</span><span class="p">(</span> <span class="p">(</span><span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">currentNode</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">[</span><span class="n">successor</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">cost</span><span class="p">),</span> <span class="n">totalCost</span> <span class="p">)</span>
+                    <span class="n">locations</span><span class="o">.</span><span class="n">push</span><span class="p">(</span> <span class="n">location</span> <span class="o">+</span> <span class="p">[</span><span class="n">successor</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">totalCost</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="search.manhattanHeuristic">
+    <p>def <span class="ident">manhattanHeuristic</span>(</p><p>position, problem)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.manhattanHeuristic', this);">Show source &equiv;</a></p>
+  <div id="source-search.manhattanHeuristic" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">manhattanHeuristic</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">problem</span><span class="p">):</span>
+    <span class="n">xy1</span> <span class="o">=</span> <span class="n">position</span>
+    <span class="n">xy2</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">goal</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xy1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xy1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="search.nullHeuristic">
+    <p>def <span class="ident">nullHeuristic</span>(</p><p>state, problem=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>A heuristic function estimates the cost from the current state to the nearest
+goal in the provided SearchProblem.  This heuristic is trivial.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.nullHeuristic', this);">Show source &equiv;</a></p>
+  <div id="source-search.nullHeuristic" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">nullHeuristic</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">problem</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A heuristic function estimates the cost from the current state to the nearest</span>
+<span class="sd">    goal in the provided SearchProblem.  This heuristic is trivial.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">0</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
+      <div class="item">
+      <p id="search.Node" class="name">class <span class="ident">Node</span></p>
+      
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.Node', this);">Show source &equiv;</a></p>
+  <div id="source-search.Node" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
+</pre></div>
+
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Instance variables</h3>
+            <div class="item">
+            <p id="search.Node.action" class="name">var <span class="ident">action</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.Node.parent" class="name">var <span class="ident">parent</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.Node.state" class="name">var <span class="ident">state</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="search.Node.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, state, parent, action)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.Node.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-search.Node.__init__" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="search.PriorityQueue" class="name">class <span class="ident">PriorityQueue</span></p>
+      
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.PriorityQueue', this);">Show source &equiv;</a></p>
+  <div id="source-search.PriorityQueue" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">PriorityQueue</span><span class="p">():</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        
+    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+        <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">item</span><span class="p">)</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">item</span>
+
+    <span class="k">def</span> <span class="nf">isEmpty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+    
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        * If item already in priority queue with higher priority, update its priority and rebuild the heap.</span>
+<span class="sd">        * If item already in priority queue with equal or lower priority, do nothing.</span>
+<span class="sd">        * If item not in priority queue, do the same thing as self.push.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">priority</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">priority</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+                <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Instance variables</h3>
+            <div class="item">
+            <p id="search.PriorityQueue.container" class="name">var <span class="ident">container</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.PriorityQueue.count" class="name">var <span class="ident">count</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="search.PriorityQueue.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.PriorityQueue.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-search.PriorityQueue.__init__" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">container</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.PriorityQueue.isEmpty">
+    <p>def <span class="ident">isEmpty</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.PriorityQueue.isEmpty', this);">Show source &equiv;</a></p>
+  <div id="source-search.PriorityQueue.isEmpty" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">isEmpty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.PriorityQueue.pop">
+    <p>def <span class="ident">pop</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.PriorityQueue.pop', this);">Show source &equiv;</a></p>
+  <div id="source-search.PriorityQueue.pop" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">_</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">item</span><span class="p">)</span> <span class="o">=</span> <span class="n">heapq</span><span class="o">.</span><span class="n">heappop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">item</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.PriorityQueue.push">
+    <p>def <span class="ident">push</span>(</p><p>self, item, priority)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.PriorityQueue.push', this);">Show source &equiv;</a></p>
+  <div id="source-search.PriorityQueue.push" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+    <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.PriorityQueue.update">
+    <p>def <span class="ident">update</span>(</p><p>self, item, priority)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><ul>
+<li>If item already in priority queue with higher priority, update its priority and rebuild the heap.</li>
+<li>If item already in priority queue with equal or lower priority, do nothing.</li>
+<li>If item not in priority queue, do the same thing as self.push.</li>
+</ul></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.PriorityQueue.update', this);">Show source &equiv;</a></p>
+  <div id="source-search.PriorityQueue.update" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    * If item already in priority queue with higher priority, update its priority and rebuild the heap.</span>
+<span class="sd">    * If item already in priority queue with equal or lower priority, do nothing.</span>
+<span class="sd">    * If item not in priority queue, do the same thing as self.push.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="n">priority</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">priority</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+            <span class="n">heapq</span><span class="o">.</span><span class="n">heapify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">)</span>
+            <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">priority</span><span class="p">)</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="search.SafestPathProblem" class="name">class <span class="ident">SafestPathProblem</span></p>
+      
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SafestPathProblem', this);">Show source &equiv;</a></p>
+  <div id="source-search.SafestPathProblem" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SafestPathProblem</span><span class="p">(</span><span class="n">SearchProblem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">costFn</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="c1"># the center of the start</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">goal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span> <span class="o">=</span> <span class="n">costFn</span>
+        
+        <span class="c1"># For display purpose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">[],</span> <span class="mi">0</span>
+        
+    <span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span>
+    
+    <span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">isGoal</span> <span class="o">=</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span>
+        
+        <span class="k">if</span> <span class="n">isGoal</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">isGoal</span>
+    
+    <span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">successors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Actions</span><span class="o">.</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">STRAIGHT</span><span class="p">]:</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">Actions</span><span class="o">.</span><span class="n">directionToVector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>  <span class="c1">#modified</span>
+            <span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextY</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">height</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextX</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">nextX</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span><span class="p">(</span><span class="n">nextState</span><span class="p">)</span>
+            <span class="n">successors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">nextState</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span> <span class="p">)</span>
+                
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">successors</span>
+</pre></div>
+
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#search.SearchProblem">SearchProblem</a></li>
+          </ul>
+          <h3>Instance variables</h3>
+            <div class="item">
+            <p id="search.SafestPathProblem.costFn" class="name">var <span class="ident">costFn</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.SafestPathProblem.goal" class="name">var <span class="ident">goal</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.SafestPathProblem.grid" class="name">var <span class="ident">grid</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.SafestPathProblem.startState" class="name">var <span class="ident">startState</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="search.SafestPathProblem.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, costFn, grid, start=None)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SafestPathProblem.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-search.SafestPathProblem.__init__" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">costFn</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="c1"># the center of the start</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="n">start</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">goal</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span> <span class="o">=</span> <span class="n">costFn</span>
+    
+    <span class="c1"># For display purpose</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">[],</span> <span class="mi">0</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.SafestPathProblem.getCostOfActions">
+    <p>def <span class="ident">getCostOfActions</span>(</p><p>self, actions)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.getCostOfActions">getCostOfActions</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SafestPathProblem.getCostOfActions', this);">Show source &equiv;</a></p>
+  <div id="source-search.SafestPathProblem.getCostOfActions" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getCostOfActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.SafestPathProblem.getStartState">
+    <p>def <span class="ident">getStartState</span>(</p><p>self)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.getStartState">getStartState</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SafestPathProblem.getStartState', this);">Show source &equiv;</a></p>
+  <div id="source-search.SafestPathProblem.getStartState" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.SafestPathProblem.getSuccessors">
+    <p>def <span class="ident">getSuccessors</span>(</p><p>self, state)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.getSuccessors">getSuccessors</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SafestPathProblem.getSuccessors', this);">Show source &equiv;</a></p>
+  <div id="source-search.SafestPathProblem.getSuccessors" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="n">successors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Actions</span><span class="o">.</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">STRAIGHT</span><span class="p">]:</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">Actions</span><span class="o">.</span><span class="n">directionToVector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>  <span class="c1">#modified</span>
+        <span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nextY</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">height</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nextX</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">nextX</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span><span class="p">(</span><span class="n">nextState</span><span class="p">)</span>
+        <span class="n">successors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">nextState</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span> <span class="p">)</span>
+            
+    <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">successors</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.SafestPathProblem.isGoalState">
+    <p>def <span class="ident">isGoalState</span>(</p><p>self, state)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.isGoalState">isGoalState</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SafestPathProblem.isGoalState', this);">Show source &equiv;</a></p>
+  <div id="source-search.SafestPathProblem.isGoalState" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="n">isGoal</span> <span class="o">=</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span>
+    
+    <span class="k">if</span> <span class="n">isGoal</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">isGoal</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="search.SearchProblem" class="name">class <span class="ident">SearchProblem</span></p>
+      
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SearchProblem', this);">Show source &equiv;</a></p>
+  <div id="source-search.SearchProblem" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">SearchProblem</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+    
+    <span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+    
+    <span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+    
+    <span class="k">def</span> <span class="nf">getCostOfActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="bp">NotImplemented</span>
+</pre></div>
+
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="search.SearchProblem.getCostOfActions">
+    <p>def <span class="ident">getCostOfActions</span>(</p><p>self, actions)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SearchProblem.getCostOfActions', this);">Show source &equiv;</a></p>
+  <div id="source-search.SearchProblem.getCostOfActions" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getCostOfActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.SearchProblem.getStartState">
+    <p>def <span class="ident">getStartState</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SearchProblem.getStartState', this);">Show source &equiv;</a></p>
+  <div id="source-search.SearchProblem.getStartState" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.SearchProblem.getSuccessors">
+    <p>def <span class="ident">getSuccessors</span>(</p><p>self, state)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SearchProblem.getSuccessors', this);">Show source &equiv;</a></p>
+  <div id="source-search.SearchProblem.getSuccessors" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.SearchProblem.isGoalState">
+    <p>def <span class="ident">isGoalState</span>(</p><p>self, state)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.SearchProblem.isGoalState', this);">Show source &equiv;</a></p>
+  <div id="source-search.SearchProblem.isGoalState" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="search.ShortestPathProblem" class="name">class <span class="ident">ShortestPathProblem</span></p>
+      
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.ShortestPathProblem', this);">Show source &equiv;</a></p>
+  <div id="source-search.ShortestPathProblem" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">ShortestPathProblem</span><span class="p">(</span><span class="n">SearchProblem</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">costFn</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="c1"># the center of the start</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span><span class="o">=</span><span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">goal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span> <span class="o">=</span> <span class="n">costFn</span>
+        
+        <span class="c1"># For display purposes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">[],</span> <span class="mi">0</span>
+        
+    <span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span>
+    
+    <span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">isGoal</span> <span class="o">=</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span>
+        
+        <span class="k">if</span> <span class="n">isGoal</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">isGoal</span>
+    
+    <span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">successors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Actions</span><span class="o">.</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">STRAIGHT</span><span class="p">]:</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">state</span>
+            <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">Actions</span><span class="o">.</span><span class="n">directionToVector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>  <span class="c1">#modified</span>
+            <span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextY</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nextX</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">nextX</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span><span class="p">(</span><span class="n">nextState</span><span class="p">)</span>
+            <span class="n">successors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">nextState</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span> <span class="p">)</span>
+                
+        <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">successors</span>
+</pre></div>
+
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#search.SearchProblem">SearchProblem</a></li>
+          </ul>
+          <h3>Instance variables</h3>
+            <div class="item">
+            <p id="search.ShortestPathProblem.costFn" class="name">var <span class="ident">costFn</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.ShortestPathProblem.goal" class="name">var <span class="ident">goal</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.ShortestPathProblem.grid" class="name">var <span class="ident">grid</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="search.ShortestPathProblem.startState" class="name">var <span class="ident">startState</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="search.ShortestPathProblem.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, costFn, grid, start=None)</p>
+    </div>
+    
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.ShortestPathProblem.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-search.ShortestPathProblem.__init__" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">costFn</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">startState</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="c1"># the center of the start</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span><span class="o">=</span><span class="n">start</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">goal</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span> <span class="o">=</span> <span class="n">costFn</span>
+    
+    <span class="c1"># For display purposes</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">[],</span> <span class="mi">0</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.ShortestPathProblem.getCostOfActions">
+    <p>def <span class="ident">getCostOfActions</span>(</p><p>self, actions)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.getCostOfActions">getCostOfActions</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.ShortestPathProblem.getCostOfActions', this);">Show source &equiv;</a></p>
+  <div id="source-search.ShortestPathProblem.getCostOfActions" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getCostOfActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actions</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="bp">NotImplemented</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.ShortestPathProblem.getStartState">
+    <p>def <span class="ident">getStartState</span>(</p><p>self)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.getStartState">getStartState</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.ShortestPathProblem.getStartState', this);">Show source &equiv;</a></p>
+  <div id="source-search.ShortestPathProblem.getStartState" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getStartState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">startState</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.ShortestPathProblem.getSuccessors">
+    <p>def <span class="ident">getSuccessors</span>(</p><p>self, state)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.getSuccessors">getSuccessors</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.ShortestPathProblem.getSuccessors', this);">Show source &equiv;</a></p>
+  <div id="source-search.ShortestPathProblem.getSuccessors" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">getSuccessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="n">successors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Actions</span><span class="o">.</span><span class="n">LEFT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">RIGHT</span><span class="p">,</span> <span class="n">Actions</span><span class="o">.</span><span class="n">STRAIGHT</span><span class="p">]:</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="n">dy</span><span class="p">,</span> <span class="n">dx</span> <span class="o">=</span> <span class="n">Actions</span><span class="o">.</span><span class="n">directionToVector</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>  <span class="c1">#modified</span>
+        <span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">dy</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">dx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nextY</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nextX</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">nextX</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nextState</span> <span class="o">=</span> <span class="p">(</span><span class="n">nextY</span><span class="p">,</span> <span class="n">nextX</span><span class="p">)</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">costFn</span><span class="p">(</span><span class="n">nextState</span><span class="p">)</span>
+        <span class="n">successors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">nextState</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">cost</span><span class="p">)</span> <span class="p">)</span>
+            
+    <span class="bp">self</span><span class="o">.</span><span class="n">_expanded</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">successors</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="search.ShortestPathProblem.isGoalState">
+    <p>def <span class="ident">isGoalState</span>(</p><p>self, state)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#search.SearchProblem">SearchProblem</a></code>.<code><a href="#search.SearchProblem.isGoalState">isGoalState</a></code>
+    </p>
+
+    
+  
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-search.ShortestPathProblem.isGoalState', this);">Show source &equiv;</a></p>
+  <div id="source-search.ShortestPathProblem.isGoalState" class="source">
+    <div class="codehilite"><pre><span></span><span class="k">def</span> <span class="nf">isGoalState</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="n">isGoal</span> <span class="o">=</span> <span class="n">state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">goal</span>
+    
+    <span class="k">if</span> <span class="n">isGoal</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visitedlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">isGoal</span>
+</pre></div>
+
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+
+  </section>
+
+    </article>
+  <div class="clear"> </div>
+  <footer id="footer">
+    <p>
+      Generated by <a href="https://pdoc3.github.io/pdoc">pdoc 0.3.13</a>
+    </p>
+  </footer>
+</div>
+</body>
+</html>
