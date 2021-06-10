@@ -152,7 +152,7 @@ class GameGraph:
         self.G = nx.DiGraph()
         self.id = 0     # store the last id in the graph
         self.curID = 0  # store the current id (position of car) in the graph
-        self.available = []
+        # self.available = [] # store the list of descendants of a node
 
     def expand(self, root_id, y, x, max_depth, velocity, grid):
         """Graph expansion based on the max_depth parameter.
@@ -168,7 +168,7 @@ class GameGraph:
             grid (Grid): The game grid.
         """
         # add the root node
-        last_y = grid.height
+        last_y = grid.height - 1
         self.velocity = velocity
         self.updateCurrentNode(root_id)
         parent_ids = []
@@ -184,7 +184,7 @@ class GameGraph:
                 self.G.add_weighted_edges_from([(root_id, self.id, -edge_weight)])
                 if grid[y+leap][x-1] == grid.blob_score:
                     self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-                if y+leap == last_y:
+                if y+leap >= last_y:
                     self.finished(self.id)
                 parent_ids.append(self.id)
             self.id += 1
@@ -192,16 +192,16 @@ class GameGraph:
             self.G.add_weighted_edges_from([(root_id, self.id, 0)])
             if grid[y+leap][x] == grid.blob_score:
                     self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-            if y+leap == last_y:
+            if y+leap >= last_y:
                 self.finished(self.id)
             parent_ids.append(self.id)
             self.id += 1
-            if (x + 1 <= 12):
+            if (x + 1 <= grid.width-1):
                 self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y+leap, x+1), 'velocity': velocity, 'finished': False})])
                 self.G.add_weighted_edges_from([(root_id, self.id, edge_weight)])
                 if grid[y+leap][x+1] == grid.blob_score:
                     self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-                if y+leap == last_y:
+                if y+leap >= last_y:
                     self.finished(self.id)
                 parent_ids.append(self.id)
             self.id += 1
@@ -210,14 +210,14 @@ class GameGraph:
             for i in range(2, max_depth):
                 y_temp = y + leap*i
                 for x_temp in range(x-i, x+i+1):
-                    if (x_temp < 0 or x_temp > 12):
+                    if (x_temp < 0 or x_temp > grid.width-1):
                         self.id += 1
                         continue
                     self.G.add_nodes_from([(self.id, {'weight': 0, 'location': (y_temp, x_temp), 'velocity': velocity, 'finished': False})])
                     children_ids.append(self.id)
                     if grid[y_temp][x_temp] == grid.blob_score:
                         self.setNodeWeight(self.id, (1/velocity) * self.blob_score)
-                    if y_temp == last_y:
+                    if y_temp >= last_y:
                         self.finished(self.id)
                     self.id += 1
                 step = 2*(i-1) + 1
@@ -355,8 +355,8 @@ class GameGraph:
         Returns:
             list: List of successors of the node.
         """
-        self.available = sorted(list(self.G.successors(id)))
-        return self.available
+        available = sorted(list(self.G.successors(id)))
+        return available
 
     def doMove(self, action):
         """Update the curID of the graph according to the given action.
@@ -368,28 +368,31 @@ class GameGraph:
             int or None: Return None if the node has no possible action, curID otherwise.
         """
         posible_actions = self.getPossibleActions(self.curID)
+        available = self.getAvailable(self.curID)
         if len(posible_actions) == 0:
-            return None
+            return
         reversed_action = Actions.reverseDirection(action)
         if len(posible_actions) == 3:
             if reversed_action == Actions.LEFT:
-                self.updateCurrentNode(self.available[0])
+                self.updateCurrentNode(available[0])
             if reversed_action == Actions.STRAIGHT:
-                self.updateCurrentNode(self.available[1])
+                self.updateCurrentNode(available[1])
             if reversed_action == Actions.RIGHT:
-                self.updateCurrentNode(self.available[2])
+                self.updateCurrentNode(available[2])
         elif len(posible_actions) == 2:
+            if reversed_action not in posible_actions:
+                reversed_action = Actions.STRAIGHT
             if reversed_action == Actions.STRAIGHT:
-                if (self.G.nodes[self.curID]['location'][1] == self.G.nodes[self.available[0]]['location'][1]):
-                    self.updateCurrentNode(self.available[0])
+                if (self.G.nodes[self.curID]['location'][1] == self.G.nodes[available[0]]['location'][1]):
+                    self.updateCurrentNode(available[0])
                 else:
-                    self.updateCurrentNode(self.available[1])
+                    self.updateCurrentNode(available[1])
             if reversed_action == Actions.LEFT:
-                if (self.G.nodes[self.curID]['location'][1] - 1 == self.G.nodes[self.available[0]]['location'][1]):
-                    self.updateCurrentNode(self.available[0])
+                if (self.G.nodes[self.curID]['location'][1] - 1 == self.G.nodes[available[0]]['location'][1]):
+                    self.updateCurrentNode(available[0])
             if reversed_action == Actions.RIGHT:
-                if (self.G.nodes[self.curID]['location'][1] + 1 == self.G.nodes[self.available[1]]['location'][1]):
-                    self.updateCurrentNode(self.available[1])
+                if (self.G.nodes[self.curID]['location'][1] + 1 == self.G.nodes[available[1]]['location'][1]):
+                    self.updateCurrentNode(available[1])
         return self.curID
     
     def generateSuccessors(self, action, id):
@@ -404,28 +407,33 @@ class GameGraph:
         """
         reversed_action = Actions.reverseDirection(action)
         posible_actions = self.getPossibleActions(id)
+        available = self.getAvailable(id)
         successorID = id
         if len(posible_actions) == 0:
-            return None
+            return id
         if len(posible_actions) == 3:
             if reversed_action == Actions.LEFT:
-                successorID = self.available[0]
+                successorID = available[0]
             if reversed_action == Actions.STRAIGHT:
-                successorID = self.available[1]
+                successorID = available[1]
             if reversed_action == Actions.RIGHT:
-                successorID = self.available[2]
+                successorID = available[2]
         elif len(posible_actions) == 2:
+            if reversed_action not in posible_actions:
+                reversed_action = Actions.STRAIGHT
             if reversed_action == Actions.STRAIGHT:
-                if (self.G.nodes[id]['location'][1] == self.G.nodes[self.available[0]]['location'][1]):
-                    successorID = self.available[0]
+                if (self.G.nodes[id]['location'][1] == self.G.nodes[available[0]]['location'][1]):
+                    successorID = available[0]
                 else:
-                    successorID = self.available[1]
+                    successorID = available[1]
             if reversed_action == Actions.LEFT:
-                if (self.G.nodes[id]['location'][1] - 1 == self.G.nodes[self.available[0]]['location'][1]):
-                    successorID = self.available[0]
+                if (self.G.nodes[id]['location'][1] - 1 == self.G.nodes[available[0]]['location'][1]):
+                    successorID = available[0]
             if reversed_action == Actions.RIGHT:
-                if (self.G.nodes[id]['location'][1] + 1 == self.G.nodes[self.available[1]]['location'][1]):
-                   successorID = self.available[1]
+                if (self.G.nodes[id]['location'][1] + 1 == self.G.nodes[available[1]]['location'][1]):
+                    successorID = available[1]
+        # print(reversed_action)
+        # print(available)
         return successorID
             
     def getPossibleActions(self, id):
@@ -437,17 +445,17 @@ class GameGraph:
         Returns:
             list: List of possible actions.
         """
-        # posibleActions = []
-        self.getAvailable(id)
-        if len(self.available) == 0:
+        
+        available = self.getAvailable(id)
+        if len(available) == 0:
             return []
-        elif len(self.available) == 3:
+        elif len(available) == 3:
             return [Actions.LEFT, Actions.STRAIGHT, Actions.RIGHT]
         else:
-            if (self.G.nodes[id]['location'][1] == self.G.nodes[self.available[0]]['location'][1]):
+            if (self.G.nodes[id]['location'][1] == self.G.nodes[available[0]]['location'][1]):
                 return [Actions.STRAIGHT, Actions.RIGHT]
-            if (self.G.nodes[id]['location'][1] == self.G.nodes[self.available[1]]['location'][1]):
-                return [Actions.STRAIGHT, Actions.LEFT]
+            if (self.G.nodes[id]['location'][1] == self.G.nodes[available[1]]['location'][1]):
+                return [Actions.LEFT, Actions.STRAIGHT]
                     
     def printGraph(self):
         plt.figure()

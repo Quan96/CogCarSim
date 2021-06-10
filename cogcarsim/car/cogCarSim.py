@@ -633,7 +633,7 @@ class CogCarSim:
         collision_score = -1.0
         gameGrid = self.create_grid(path_score=path_score, blob_score=blob_score, adjacent_score=adjacent_score, 
                          start_score=start_score, goal_score=goal_score)
-        max_depth = 7
+        max_depth = gameGrid.height // leap
         # print(max_depth)
         gameGraph = self.create_graph(blob_score=-20)
         gameGraph.expand(0, 0, 6, max_depth, velocity, gameGrid)
@@ -665,7 +665,7 @@ class CogCarSim:
             # self.gridToLogFile(gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score)
             reinforce = True
             MCTS_player = MCTSPlayer()
-            MCTS_player.registerInitialState()
+            MCTS_player.registerInitialState()  
                         
         while carPos.y < last_y:
             if not batch:
@@ -724,28 +724,28 @@ class CogCarSim:
                 if gameGrid[y][x] == blob_score:
                     gameGrid.setTileScore(y, x, collision_score)
                 
-                gameGraph.getAvailable(gameGraph.curID)
-                if len(gameGraph.available) == 0:
+                available = gameGraph.getAvailable(gameGraph.curID)
+                if len(available) == 0:
                     if (gameGrid.height == y):
                         gameGraph.finished(gameGraph.curID)
                     elif int((gameGrid.height - y) // leap) >= max_depth:
                         gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)     
                         # gameGraph.getAvailable(gameGraph.curID)
                     else:
-                        max_depth = int((gameGrid.height - y) // leap)
-                        gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)
-                        # gameGraph.finished()
+                        depth = int((gameGrid.height - y) // leap)
+                        gameGraph.expand(gameGraph.curID, y, x, depth, velocity, gameGrid)
                 
                 action = MCTS_player.get_action(gameGraph)
-                # print(action)
                 gameGraph.doMove(action)
                 cur_y, cur_x = gameGraph.getNodeGridPosition(gameGraph.curID)
+                # print(cur_y, cur_x)
                 y_dest, x_dest = toGameCoords(gameGrid.x_range, gameGrid.y_range,
                                               gameGrid.x_min, gameGrid.x_max, 
                                               gameGrid.y_min, gameGrid.y_max, cur_y, cur_x)
-                # theta = math.atan((x_dest - carPos.x)/(y_dest - carPos.y))
                 duration = int(math.ceil((y_dest - carPos.y))/velocity)
+                # print(y_dest, carPos.y, duration)
                 # print(gameGraph.getNodeInfo(gameGraph.curID))
+                # print(step)
                 if duration != 0:
                     theta = math.atan((x_dest - carPos.x)/duration)
                     for _ in range(duration):
@@ -848,7 +848,7 @@ class CogCarSim:
             p.time = datetime.datetime.fromtimestamp(time.time())
             path.append(p)
             step += 1
-            
+          
         # After while loop
         
         self.gridToLogFile(gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score)
