@@ -1,10 +1,5 @@
-# import logging
-# import copy
-# from decimal import Decimal
-# from os import stat_result
-# import numpy as np
-# from operator import itemgetter
-from game import Actions
+from __future__ import print_function
+from .game import Actions
 
 import random
 import math
@@ -33,43 +28,50 @@ class MCTSPlayer:
         self.root = None
         return
     
-    def expand(self, node, game):
+    def expansion(self, node, game):
         nodeSet = actionList = []
         tempNode = node
         
         while tempNode.parent is not None:
-            nodeSet.append(tempNode)
+            nodeSet.insert(0, tempNode)
             tempNode = tempNode.parent
         
-        nodeSet.reverse()
+        # nodeSet.reverse()
+        # print(nodeSet)
         tempState = game.curID
         
         for i in nodeSet:
             prevState = tempState
-            tempState = game.generateSuccessors(i.lastAction, tempState)
-            if tempState is None:
+            # print(1)
+            # print("prevState:", prevState)
+            tempState = game.generateSuccessors(i.lastAction, tempState) 
+            # print("tempState:", tempState)
+            if tempState <= prevState or game.isFinished(tempState):
                 self.backpropagate(i, game.gameEvaluation(tempState))
                 return None
-            elif game.isFinished(tempState):
+            # elif game.isFinished(tempState):
+            #     self.backpropagate(i, game.gameEvaluation(tempState))
+            #     return
+            else:
                 self.backpropagate(i, game.gameEvaluation(tempState))
                 return
         
+        # print(node.childList)
         for i in node.childList:
             actionList.append(i.lastAction)
+        # print()
         
         legal = game.getPossibleActions(tempState)
-        # childNode = Node(None, None)
         for action in legal:
             if action not in actionList:
                 childNode = node.createChild(action)
-                return childNode
+                # actionList.append(action)
                 break
         if len(node.childList) == len(legal):
             node.expanded = True
-        
-        return
-                      
-                
+        return childNode
+
+
     def backpropagate(self, node, score):
         while node is not self.root:
             node.visitnumber += 1
@@ -92,9 +94,10 @@ class MCTSPlayer:
     
     def treePolicy(self, game):
         node = self.root
+        # print(node)
         while True:
             if not node.expanded:
-                return self.expand(node, game)
+                return self.expansion(node, game)
             else:
                 node = self.select(node)
                 
@@ -108,17 +111,21 @@ class MCTSPlayer:
         
         nodeSet.reverse()
         tempState = game.curID
+        # print(nodeSet)
         for i in nodeSet:
             prevState = tempState
             tempState = game.generateSuccessors(i.lastAction, tempState)            
-            if tempState is None:
-                self.backpropagate(i, game.gameEvaluation(tempState))
+            if tempState <= prevState or game.isFinished(tempState):
+                self.backpropagate(i, game.gameEvaluation(prevState))
                 return None
-            elif game.isFinished(tempState):
-                self.backpropagate(i, game.gameEvaluation(tempState))
-                return
+            # elif game.isFinished(tempState):
+            #     self.backpropagate(i, game.gameEvaluation(tempState))
+            #     return
+            # else:
+            #     self.backpropagate(i, game.gameEvaluation(tempState))
+            #     return
         
-        for j in range(0, 5):
+        for _ in range(0, 3):
             if not game.isFinished(tempState):
                 legal = game.getPossibleActions(tempState)
                 if not legal:
@@ -155,6 +162,8 @@ class MCTSPlayer:
             if node.visitnumber == rootChildList[0]:
                 bestActions.append(node.lastAction)
                 
-        if len(bestActions) == 0:
-            return Actions.STRAIGHT
-        return bestActions[random.randint(0, len(bestActions) - 1)]
+        if len(bestActions) != 0:
+            # print(len(bestActions))
+            return bestActions[random.randint(0, len(bestActions) - 1)]
+
+        return Actions.STRAIGHT

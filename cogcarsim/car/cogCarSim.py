@@ -635,7 +635,7 @@ class CogCarSim:
                          start_score=start_score, goal_score=goal_score)
         max_depth = gameGrid.height // leap
         # print(max_depth)
-        gameGraph = self.create_graph(blob_score=-20)
+        gameGraph = self.create_graph(blob_score=-99999)
         gameGraph.expand(0, 0, 6, max_depth, velocity, gameGrid)
         
         # memo = {}
@@ -667,7 +667,7 @@ class CogCarSim:
             MCTS_player = MCTSPlayer()
             MCTS_player.registerInitialState()  
                         
-        while carPos.y < last_y:
+        while carPos.y < last_y and not reinforce:
             if not batch:
                 rate(display_rate)
             clock_begin = time.clock()
@@ -848,9 +848,152 @@ class CogCarSim:
             p.time = datetime.datetime.fromtimestamp(time.time())
             path.append(p)
             step += 1
-          
-        # After while loop
         
+        # print(gameGrid.height)
+        while carPos.y < last_y and reinforce:
+            # if not batch:
+            #     rate(display_rate)
+            clock_begin = time.clock()
+            
+            if self.scene.kb.keys:
+                cheated = True
+                key = self.scene.kb.getkey()
+                if key == 'q':
+                    self.scene.visible = False
+                    return None
+                elif key == 'p':
+                    pause = not pause
+                elif key == ' ':
+                    play1 = True
+                    self.scene.center.z = 2*self.scene.center.z
+                    self.scene.center.z = self.scene.center.z / 2
+                elif key == "+":
+                    display_rate *= 2
+                elif key == '-':
+                    display_rate /= 2
+                    if display_rate == 0:
+                        display_rate = 1
+                elif key == 'd':
+                    debug = not debug
+                    debug_label.visible = debug
+            
+            if play1:
+                pause = True
+                play1 = False
+            elif pause:
+                continue
+            
+            # blob housekeeping
+            # passed = self.reposition_blobs(carPos.y, step)
+            
+            y, x = toGridCoords(gameGrid.x_range, gameGrid.y_range,
+                                              gameGrid.x_min, gameGrid.x_max, 
+                                              gameGrid.y_min, gameGrid.y_max, carPos)
+            if gameGrid[y][x] == path_score:
+                gameGrid.setTileScore(y, x, car_score)
+            if gameGrid[y][x] == adjacent_score:
+                gameGrid.setTileScore(y, x, car_score)
+            if gameGrid[y][x] == blob_score:
+                gameGrid.setTileScore(y, x, collision_score)
+            
+            available = gameGraph.getAvailable(gameGraph.curID)
+            if len(available) == 0:
+                if int((gameGrid.height - y) // leap) >= max_depth:
+                    gameGraph.expand(gameGraph.curID, y, x, max_depth, velocity, gameGrid)     
+                else:
+                    depth = int((gameGrid.height - y) // leap)
+                    gameGraph.expand(gameGraph.curID, y, x, depth, velocity, gameGrid)
+            
+            action = MCTS_player.get_action(gameGraph)
+            gameGraph.doMove(action)
+            dest_y, dest_x = gameGraph.getNodeGridPosition(gameGraph.curID)
+            # print(cur_y, cur_x)
+            y_dest, x_dest = toGameCoords(gameGrid.x_range, gameGrid.y_range,
+                                            gameGrid.x_min, gameGrid.x_max, 
+                                            gameGrid.y_min, gameGrid.y_max, dest_y, dest_x)
+            duration = int(math.ceil((y_dest - carPos.y))/velocity)
+            # print(duration)0
+            # print(gameGraph.getNodeInfo(gameGraph.curID))
+            # print(step)
+            # print(action)
+            if duration != 0:
+                theta = math.atan((x_dest - carPos.x)/duration)
+                for _ in range(duration):
+                    rate(display_rate)
+                    wheelpos = Actions.radianToWheel(theta)
+                    throttlepos = 1000.0
+                    
+                    passed = self.reposition_blobs(carPos.y, step)
+                    step += 1
+                    chosen_velocity = velocity # to be used in collision analyses
+                    velocity += passed * nocollision_velocity_up
+                    car.setVelocity(velocity)
+                    xp, yp = car.move(wheelpos)
+                    
+                    if (xp > right_lane_x - lane_margin):
+                        xp = right_lane_x - lane_margin
+                    if (xp < left_lane_x + lane_margin):
+                        xp = left_lane_x + lane_margin
+                    if max_velocity < velocity:
+                        max_velocity = velocity
+                    if (background_effect_left):
+                        background_effect_left -= 1
+                    if not background_effect_left:
+                        self.scene.background = (0, 0, 0)    
+                    
+                    # All the movement happens here
+                    old_interval = sys.getcheckinterval()
+                    sys.setcheckinterval(100000)
+                    carPos.x = xp
+                    carPos.y = yp
+                    debug_label.pos = carPos
+            
+                    self.scene.center.x = xp
+                    self.scene.center.y = self.scene.center.y + velocity
+                    left_lane.pos.y = left_lane.pos.y + velocity
+                    right_lane.pos.y = right_lane.pos.y + velocity
+                    sys.setcheckinterval(old_interval)
+            
+                    # Collision detection and handing
+                    
+                    # car_y, car_x = toGridCoords(gameGrid.x_range, gameGrid.y_range,
+                    #                                     gameGrid.x_min, gameGrid.x_max, 
+                    #                                     gameGrid.y_min, gameGrid.y_max, carPos)            
+                    collision, collided_color = self.check_collision(carPos.x, carPos.y, step)
+                    if (collision):
+                        # score -= gameGrid[car_y][car_x]
+                        collision_count = collision_count + 1
+                        self.scene.background = (0.5, 0.5, 0.5)
+                        background_effect_left += 5
+                        if (step - last_collision > collision_grace_period):
+                            velocity -= collision_velocity_down 
+                            if (velocity < guaranteed_velocity):
+                                velocity = guaranteed_velocity
+                            collision_speed_drops = collision_speed_drops + 1
+                            last_collision = step
+                    else:
+                        velocity = self.gate_passed(carPos.x, carPos.y, is_gate_on, velocity)
+                            
+                    debug_label.text = 'Speed %.3f\nMaxSp %.3f\nSpeed drops %i\nCollisions %i\nBlobs %i\nGate %i ' % (velocity, max_velocity, collision_speed_drops, collision_count, self.first_visible_blob, len(self.gates))
+                    
+                    p = PathEntry()
+                    p.step = step
+                    p.x = carPos.x
+                    p.y = carPos.y
+                    p.collision = collision
+                    p.wheelpos = wheelpos
+                    p.throttlepos = throttlepos
+                    p.velocity = velocity
+                    p.chosen_velocity = chosen_velocity
+                    p.clock_begin = clock_begin
+                    p.time = datetime.datetime.fromtimestamp(time.time())
+                    path.append(p)
+            else:
+                break
+            
+            # print(gameGraph.getNodeInfo(gameGraph.curID))
+                    
+        # After while loop
         self.gridToLogFile(gameGrid, path_score, blob_score, adjacent_score, collision_score, car_score)
         clock_diff = path[-1].clock_begin - path[0].clock_begin
         step_diff = path[-1].step - path[0].step
@@ -874,8 +1017,6 @@ class CogCarSim:
     
     def __del__(self):
         wheel.releasex()
-        
-
                           
                     
 def isRandom():
